@@ -7,11 +7,9 @@ import {TASK_NAV, TASK_STATUS} from '../constant/task.constant';
 import {backgroundStyle} from '../../App';
 import SegmentedControlTab from 'react-native-segmented-control-tab';
 import {useDispatch, useSelector} from 'react-redux';
-import {setTaskList} from '../reducer/task.reducer';
 import {TaskModel} from '../interface/task.interface';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
-import {getTaskListAction, savedTaskAction} from '../saga/task.saga';
+import {savedTaskAction} from '../saga/task.saga';
 
 const AddTask = () => {
   const navigation = useNavigation<StackNavigationProp<any>>();

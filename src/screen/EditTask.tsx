@@ -30,6 +30,7 @@ const EditTask = () => {
     backBtn: 'Back',
     editBtn: 'Update',
   };
+
   const updateItem = async () => {
     const taskItem: TaskModel = {
       ...task,
@@ -38,10 +39,11 @@ const EditTask = () => {
       status: status ? TASK_STATUS.COMPLETED : TASK_STATUS.PENDING,
     };
     const filterTaskList = taskList.filter((i: any) => i.id !== task.id);
-    console.log('filter', filterTaskList);
     const updatedTaskList = [...filterTaskList, taskItem];
     dispatch(savedTaskAction({taskList: updatedTaskList}));
+    navigation.navigate(TASK_NAV.HOME);
   };
+
   return (
     <SafeAreaView style={backgroundStyle()}>
       <View style={styles.container}>
@@ -72,7 +74,11 @@ const EditTask = () => {
             title={labelList.backBtn}
             onPress={() => navigation.goBack()}
           />
-          <Button title={labelList.editBtn} onPress={updateItem} />
+          <Button
+            title={labelList.editBtn}
+            onPress={updateItem}
+            disabled={!title || !description}
+          />
         </View>
       </View>
     </SafeAreaView>

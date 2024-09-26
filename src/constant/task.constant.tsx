@@ -10,3 +10,9 @@ export const TASK_STATUS = {
 };
 
 export const STORAGE_KEY = '@task_list';
+
+export const FILTER_TASK_STATUS = [
+  {id: '*', label: 'All'},
+  {id: '0', label: TASK_STATUS.PENDING},
+  {id: '1', label: TASK_STATUS.COMPLETED},
+];
