@@ -5,29 +5,36 @@
 
 ## Each screen UI
 
-### For Android - Pixel 3A
-
 ```bash
-# using npm
-npm run android
+# to build
+yarn install
 
-# OR using Yarn
+# using IOS
+cd ios && pod install && cd ..
+yarn ios
+
+# OR using Android
 yarn android
 ```
 
-### For iOS - iPhone 15 Pro
+### Demo screen (iOS - iPhone 15 Pro)
 
-```bash
-# using npm
-npm run ios
+#### Home Page
+![Home - All](https://github.com/user-attachments/assets/233d2f67-d931-44c8-bb98-ea7daf8fe686)
+![Home - Completed](https://github.com/user-attachments/assets/dd5984a4-34e2-4e1f-b430-d74e81de7144)
+![Home - Pending](https://github.com/user-attachments/assets/195a3b53-1446-4624-abfb-5e7d299a8b5f)
 
-# OR using Yarn
-yarn ios
-```
+#### Add Task Page
+![AddTask-without input](https://github.com/user-attachments/assets/98f12d02-2a22-4041-a7a9-04c9c6f9b4b2)
+![AddTask-with input](https://github.com/user-attachments/assets/e5633206-685e-48d4-a67e-3a42f3dd7134)
 
-## Async Storage
+#### Edit Task Page
+![EditTask](https://github.com/user-attachments/assets/a6804b6a-eefe-4c41-b6bf-0275c76074e0)
 
-When the app starts/restarts, it should load the tasks from storage.
+### Async Storage
+
+When the app starts/restarts, it should load the tasks from storage. 
+Using /saga to perform CRUD.
 
 ### Unit Test
 
@@ -41,3 +48,4 @@ Due to .gitignore for node modules, there are minor changes on a node file for *
 ```bash
 yarn test-coverage-all
 ```
+<img width="1434" alt="Overall-test-coverage" src="https://github.com/user-attachments/assets/6ec9090d-6c61-455f-a4d4-5bb5a5b6f2cd">
