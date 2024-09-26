@@ -1,4 +1,5 @@
-# To-Do List Application [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# To-Do List Application 
+[**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
 > **Note**: Instruction based on [Instruction Sheet](https://offices.notion.site/React-Native-POC-1cc17f74ce6e4e11a6d1d4c0f2566d59)
 
