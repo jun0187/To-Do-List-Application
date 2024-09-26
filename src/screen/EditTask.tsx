@@ -31,6 +31,15 @@ const EditTask = () => {
     editBtn: 'Update',
   };
 
+  const testID = {
+    inputTitle: 'input-title',
+    inputDesc: 'input-description',
+    pendingTab: 'segmented-tab-pending',
+    completedTab: 'segmented-tab-completed',
+    backBtn: 'back-button',
+    editBtn: 'edit-button',
+  };
+
   const updateItem = async () => {
     const taskItem: TaskModel = {
       ...task,
@@ -49,12 +58,14 @@ const EditTask = () => {
       <View style={styles.container}>
         <Text style={styles.titleText}>{labelList.editTask}</Text>
         <TextInput
+          testID={testID.inputTitle}
           style={styles.input}
           placeholder={labelList.title}
           onChangeText={setTitle}
           value={title}
         />
         <TextInput
+          testID={testID.inputDesc}
           style={styles.input}
           placeholder={labelList.description}
           onChangeText={setDescription}
@@ -62,6 +73,7 @@ const EditTask = () => {
         />
 
         <SegmentedControlTab
+          testIDs={[testID.pendingTab, testID.completedTab]}
           values={[TASK_STATUS.PENDING, TASK_STATUS.COMPLETED]}
           tabsContainerStyle={styles.statusContainer}
           selectedIndex={status}
@@ -71,10 +83,12 @@ const EditTask = () => {
         />
         <View style={styles.buttonContainer}>
           <Button
+            testID={testID.backBtn}
             title={labelList.backBtn}
             onPress={() => navigation.goBack()}
           />
           <Button
+            testID={testID.editBtn}
             title={labelList.editBtn}
             onPress={updateItem}
             disabled={!title || !description}

@@ -36,6 +36,9 @@ const Home = () => {
     taskDetail: 'test-task-detail',
     flatList: 'test-flat-list',
     dropDown: 'test-drop-down',
+    addBtn: 'add-btn',
+    deleteBtn: 'delete-btn',
+    checkBox: 'test-check-box',
   };
 
   const labelList = {
@@ -77,7 +80,7 @@ const Home = () => {
     setData(newData);
     dispatch(savedTaskAction({taskList: newData}));
   };
-  console.log(taskList);
+
   return (
     <SafeAreaView style={backgroundStyle()}>
       <View style={styles.container}>
@@ -104,6 +107,7 @@ const Home = () => {
           />
           <Button
             title={labelList.addBtn}
+            testID={testId.addBtn}
             onPress={() => navigation.navigate(TASK_NAV.ADD_TASK)}
           />
         </View>
@@ -129,6 +133,7 @@ const Home = () => {
                   }}>
                   <View style={styles.row}>
                     <CheckBox
+                      testID={`${testId.checkBox}-${index}`}
                       onClick={() => {
                         updateItem(item.id);
                       }}
@@ -150,7 +155,10 @@ const Home = () => {
                     <View style={styles.deleteBtnContainer}>
                       <Button
                         title={labelList.deleteBtn}
-                        onPress={() => deleteItem(item.id)}
+                        testID={`${testId.deleteBtn}-${index}`}
+                        onPress={() => {
+                          deleteItem(item.id);
+                        }}
                       />
                     </View>
                   </View>

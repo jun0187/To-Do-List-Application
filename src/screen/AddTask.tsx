@@ -29,7 +29,16 @@ const AddTask = () => {
     addBtn: 'Add',
   };
 
-  const addItem = async () => {
+  const testID = {
+    inputTitle: 'input-title',
+    inputDesc: 'input-description',
+    pendingTab: 'segmented-tab-pending',
+    completedTab: 'segmented-tab-completed',
+    backBtn: 'back-button',
+    addBtn: 'add-button',
+  };
+
+  const addItem = () => {
     const taskItem: TaskModel = {
       title,
       description,
@@ -40,7 +49,7 @@ const AddTask = () => {
     dispatch(savedTaskAction({taskList: updatedTaskList}));
     navigation.navigate(TASK_NAV.HOME);
   };
-
+  console.log('add', title, description);
   return (
     <SafeAreaView style={backgroundStyle()}>
       <View style={styles.container}>
@@ -50,15 +59,18 @@ const AddTask = () => {
           placeholder={labelList.title}
           onChangeText={setTitle}
           value={title}
+          testID={testID.inputTitle}
         />
         <TextInput
           style={styles.input}
           placeholder={labelList.description}
           onChangeText={setDescription}
           value={description}
+          testID={testID.inputDesc}
         />
 
         <SegmentedControlTab
+          testIDs={[testID.pendingTab, testID.completedTab]}
           values={[TASK_STATUS.PENDING, TASK_STATUS.COMPLETED]}
           tabsContainerStyle={styles.statusContainer}
           selectedIndex={status}
@@ -68,10 +80,14 @@ const AddTask = () => {
         />
         <View style={styles.buttonContainer}>
           <Button
+            testID={testID.backBtn}
             title={labelList.backBtn}
-            onPress={() => navigation.goBack()}
+            onPress={() => {
+              navigation.goBack();
+            }}
           />
           <Button
+            testID={testID.addBtn}
             title={labelList.addBtn}
             onPress={addItem}
             disabled={!title || !description}
