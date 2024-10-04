@@ -1,7 +1,5 @@
-import {useNavigation} from '@react-navigation/native';
 import {useEffect, useState} from 'react';
 import {
-  Button,
   Dimensions,
   FlatList,
   SafeAreaView,
@@ -12,8 +10,6 @@ import {
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import React from 'react';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {backgroundStyle} from '../../App';
 import CheckBox from 'react-native-check-box';
 import {
   FILTER_TASK_STATUS,
@@ -23,14 +19,25 @@ import {
 import {setTask} from '../reducer/task.reducer';
 import {getTaskListAction, savedTaskAction} from '../saga/task.saga';
 import {Dropdown} from 'react-native-element-dropdown';
+import {backgroundStyle} from './Navigation';
+import {handleLogoutUserAction} from '../saga/authentication.saga';
+import Colors from '../assets/Colors';
+import CustomButton from '../component/CustomButton';
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {AUTH_NAV} from '../constant/authentication.constant';
+import {isTokenExpired} from '../services/Token.service';
 
 const Home = () => {
-  const navigation = useNavigation<StackNavigationProp<any>>();
   const dispatch = useDispatch();
+  const navigation = useNavigation<StackNavigationProp<any>>();
+
   const [refreshing, setRefreshing] = useState(false);
   const taskList = useSelector((state: any) => state.task.taskList);
   const [data, setData] = useState(taskList);
   const [sortData, setSortData] = useState(FILTER_TASK_STATUS[0]);
+  const refreshToken = useSelector((state: any) => state.auth.refreshToken);
+  const accessToken = useSelector((state: any) => state.auth.accessToken);
 
   const testId = {
     taskDetail: 'test-task-detail',
@@ -39,13 +46,27 @@ const Home = () => {
     addBtn: 'add-btn',
     deleteBtn: 'delete-btn',
     checkBox: 'test-check-box',
+    logoutBtn: 'logout-btn',
   };
 
   const labelList = {
-    addBtn: 'Add',
+    addBtn: '+ Add',
     deleteBtn: 'Delete',
+    logoutBtn: 'Logout',
   };
+  useEffect(() => {
+    // Call function immediately
+    isTokenExpired(accessToken);
 
+    // Set up the interval to call the function every 5 minutes
+    const intervalId = setInterval(
+      () => isTokenExpired(accessToken) && logout(),
+      1000,
+    ); // 300,000 ms = 5 minutes
+
+    // Clear the interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []);
   useEffect(() => {
     updateList();
   }, []);
@@ -81,6 +102,11 @@ const Home = () => {
     dispatch(savedTaskAction({taskList: newData}));
   };
 
+  const logout = () => {
+    dispatch(handleLogoutUserAction());
+    navigation.navigate(AUTH_NAV.LOGIN);
+  };
+
   return (
     <SafeAreaView style={backgroundStyle()}>
       <View style={styles.container}>
@@ -105,13 +131,22 @@ const Home = () => {
               setData(filterData);
             }}
           />
-          <Button
-            title={labelList.addBtn}
-            testID={testId.addBtn}
-            onPress={() => navigation.navigate(TASK_NAV.ADD_TASK)}
+          <CustomButton
+            label={labelList.logoutBtn}
+            onPressButton={logout}
+            testId={testId.logoutBtn}
+            buttonWidth={21}
           />
         </View>
-
+        <CustomButton
+          label={labelList.addBtn}
+          onPressButton={() => {
+            dispatch(setTask(null));
+            navigation.navigate(TASK_NAV.ADD_TASK);
+          }}
+          testId={testId.addBtn}
+          buttonWidth={90}
+        />
         <FlatList
           testID={testId.flatList}
           refreshing={refreshing}
@@ -146,21 +181,20 @@ const Home = () => {
                         style={{
                           color:
                             item.status === TASK_STATUS.COMPLETED
-                              ? 'green'
-                              : 'blue',
+                              ? Colors.success
+                              : Colors.pending,
                         }}>
                         {item.status}
                       </Text>
                     </View>
-                    <View style={styles.deleteBtnContainer}>
-                      <Button
-                        title={labelList.deleteBtn}
-                        testID={`${testId.deleteBtn}-${index}`}
-                        onPress={() => {
-                          deleteItem(item.id);
-                        }}
-                      />
-                    </View>
+                    <CustomButton
+                      label={labelList.deleteBtn}
+                      onPressButton={() => {
+                        deleteItem(item.id);
+                      }}
+                      testId={`${testId.deleteBtn}-${index}`}
+                      buttonWidth={30}
+                    />
                   </View>
                 </TouchableOpacity>
               </View>
@@ -186,10 +220,10 @@ const styles = StyleSheet.create({
   dropdown: {
     height: 50,
     width: '80%',
-    borderColor: 'gray',
     borderWidth: 0.5,
     borderRadius: 8,
     paddingHorizontal: '3%',
+    backgroundColor: Colors.container,
   },
   fontSizeStyle: {
     fontSize: 16,
@@ -199,9 +233,8 @@ const styles = StyleSheet.create({
   },
   listingContainer: {
     borderRadius: 30,
-    borderColor: 'black',
     borderWidth: 0.3,
-    backgroundColor: 'white',
+    backgroundColor: Colors.container,
     width: Dimensions.get('window').width - 32,
     padding: '5%',
     marginVertical: '1%',
@@ -214,10 +247,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     flexDirection: 'column',
     alignItems: 'flex-start',
-    width: '70%',
-  },
-  deleteBtnContainer: {
-    paddingHorizontal: 10,
+    width: '60%',
   },
 });
 export default Home;
