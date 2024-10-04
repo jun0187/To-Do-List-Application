@@ -28,6 +28,7 @@ describe('Home', () => {
     expect(getByTestId('test-drop-down')).toBeTruthy();
     expect(getByTestId('test-flat-list')).toBeTruthy();
     expect(getByTestId('add-btn')).toBeTruthy();
+    expect(getByTestId('logout-btn')).toBeTruthy();
     expect(getByTestId('test-task-detail-0')).toBeTruthy();
     expect(getByTestId('test-task-detail-1')).toBeTruthy();
   });
@@ -45,6 +46,14 @@ describe('Home', () => {
     const addBtn = getByTestId('add-btn');
     act(() => {
       fireEvent.press(addBtn);
+    });
+  });
+
+  it('test logout button', () => {
+    const {getByTestId} = renderUi;
+    const logoutBtn = getByTestId('logout-btn');
+    act(() => {
+      fireEvent.press(logoutBtn);
     });
   });
 

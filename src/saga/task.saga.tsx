@@ -13,7 +13,7 @@ export function* savedTask(
 
     yield call(
       AsyncStorage.setItem,
-      STORAGE_KEY,
+      STORAGE_KEY.TASK_LIST,
       JSON.stringify(action.payload.taskList),
     );
   } catch (e) {
@@ -24,7 +24,10 @@ export function* savedTask(
 export function* getTaskList() {
   try {
     // await AsyncStorage.clear();
-    const value: string = yield call(AsyncStorage.getItem, STORAGE_KEY);
+    const value: string = yield call(
+      AsyncStorage.getItem,
+      STORAGE_KEY.TASK_LIST,
+    );
 
     if (value !== null) {
       yield put(setTaskList(JSON.parse(value)));

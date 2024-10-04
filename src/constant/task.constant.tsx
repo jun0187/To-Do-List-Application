@@ -9,7 +9,10 @@ export const TASK_STATUS = {
   COMPLETED: 'Completed',
 };
 
-export const STORAGE_KEY = '@task_list';
+export const STORAGE_KEY = {
+  TASK_LIST: '@task_list',
+  USER: '@user',
+};
 
 export const FILTER_TASK_STATUS = [
   {id: '*', label: 'All'},

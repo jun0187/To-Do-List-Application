@@ -4,7 +4,8 @@ require Pod::Executable.execute_command('node', ['-p',
     "react-native/scripts/react_native_pods.rb",
     {paths: [process.argv[1]]},
   )', __dir__]).strip
-
+pod 'PasscodeAuth', :path => '../node_modules/@el173/react-native-passcode-auth'
+pod 'TouchID', :path => "../node_modules/react-native-touch-id"
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 

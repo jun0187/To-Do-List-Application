@@ -30,3 +30,11 @@ jest.mock("@react-navigation/native", () => {
 jest.mock("@react-native-async-storage/async-storage", () =>
     require("@react-native-async-storage/async-storage/jest/async-storage-mock"),
 );
+
+jest.mock('react-native-keychain', () => {
+  return {
+    setGenericPassword: jest.fn(),
+    getGenericPassword: jest.fn(),
+    resetGenericPassword: jest.fn(),
+  }
+});
