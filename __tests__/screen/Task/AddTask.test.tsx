@@ -1,10 +1,9 @@
 import React from 'react';
 import {beforeEach, describe, it} from '@jest/globals';
-import {store} from '../../src/store';
+import {store} from '../../../src/store';
 import {act, fireEvent, render} from '@testing-library/react-native';
 import {Provider} from 'react-redux';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import AddTask from '../../src/screen/AddTask';
+import AddTask from '../../../src/screen/Task/AddTask';
 
 describe('Add Task', () => {
   let renderUi: any = {};
@@ -26,7 +25,7 @@ describe('Add Task', () => {
     expect(getByTestId('segmented-tab-pending')).toBeTruthy();
     expect(getByTestId('segmented-tab-completed')).toBeTruthy();
     expect(getByTestId('back-button')).toBeTruthy();
-    expect(getByTestId('add-button')).toBeTruthy();
+    expect(getByTestId('submit-button')).toBeTruthy();
   });
 
   it('test input with Completed', async () => {
@@ -35,7 +34,7 @@ describe('Add Task', () => {
       fireEvent.changeText(getByTestId('input-title'), 'testTitle');
       fireEvent.changeText(getByTestId('input-description'), 'testDesc');
       fireEvent.press(getByTestId('segmented-tab-completed'));
-      fireEvent.press(await getByTestId('add-button'));
+      fireEvent.press(await getByTestId('submit-button'));
     });
   });
 
@@ -45,7 +44,7 @@ describe('Add Task', () => {
       fireEvent.changeText(getByTestId('input-title'), 'testTitle');
       fireEvent.changeText(getByTestId('input-description'), 'testDesc');
       fireEvent.press(getByTestId('segmented-tab-pending'));
-      fireEvent.press(await getByTestId('add-button'));
+      fireEvent.press(await getByTestId('submit-button'));
     });
   });
 

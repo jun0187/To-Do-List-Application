@@ -1,12 +1,12 @@
 import React from 'react';
 import {beforeEach, describe, it} from '@jest/globals';
-import {store} from '../../src/store';
+import {store} from '../../../src/store';
 import {act, fireEvent, render} from '@testing-library/react-native';
 import {Provider} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import EditTask from '../../src/screen/EditTask';
-import {setTask} from '../../src/reducer/task.reducer';
-import {taskListMock} from '../../__mocks__/task.mock';
+import EditTask from '../../../src/screen/Task/EditTask';
+import {setTask} from '../../../src/reducer/task.reducer';
+import {taskListMock} from '../../../__mocks__/task.mock';
 
 describe('Edit Task', () => {
   let renderUi: any = {};
@@ -31,7 +31,7 @@ describe('Edit Task', () => {
     expect(getByTestId('segmented-tab-pending')).toBeTruthy();
     expect(getByTestId('segmented-tab-completed')).toBeTruthy();
     expect(getByTestId('back-button')).toBeTruthy();
-    expect(getByTestId('edit-button')).toBeTruthy();
+    expect(getByTestId('submit-button')).toBeTruthy();
   });
 
   it('test input - completed', async () => {
@@ -40,7 +40,7 @@ describe('Edit Task', () => {
       fireEvent.changeText(getByTestId('input-title'), 'testTitle');
       fireEvent.changeText(getByTestId('input-description'), 'testDesc');
       fireEvent.press(getByTestId('segmented-tab-completed'));
-      fireEvent.press(await getByTestId('edit-button'));
+      fireEvent.press(await getByTestId('submit-button'));
     });
   });
 
@@ -50,7 +50,7 @@ describe('Edit Task', () => {
       fireEvent.changeText(getByTestId('input-title'), 'testTitle');
       fireEvent.changeText(getByTestId('input-description'), 'testDesc');
       fireEvent.press(getByTestId('segmented-tab-pending'));
-      fireEvent.press(await getByTestId('edit-button'));
+      fireEvent.press(await getByTestId('submit-button'));
     });
   });
 
