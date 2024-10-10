@@ -68,7 +68,6 @@ const Registration = () => {
     dispatch(
       registerNewUserAction({user: {email, password, firstName, lastName}}),
     );
-    // navigation.goBack();
   };
 
   return (

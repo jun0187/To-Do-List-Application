@@ -38,8 +38,6 @@ export function* handleLoginUser(action: PayloadAction<{user: UserModel}>) {
       user.password,
     );
 
-    console.log('DATA::', response);
-
     yield put(setUser({email: user.email, password: user.password}));
     yield put(setAccessToken(response.access_token));
     yield put(setRefreshToken(response.refresh_token));
@@ -51,7 +49,6 @@ export function* handleLoginUser(action: PayloadAction<{user: UserModel}>) {
 export function* getNewAccessToken() {
   try {
     const response: TokenModel = yield call(api.refreshAccessToken);
-    console.log('response::::', response);
     yield put(setAccessToken(response.access_token));
     yield put(setRefreshToken(response.refresh_token));
   } catch (e) {
@@ -107,10 +104,8 @@ export function* registerNewUser(
   try {
     const response: TokenModel = yield call(api.registerUser, user);
     yield put(setUser({email: user.email, password: user.password}));
-    console.log(response);
     yield put(setAccessToken(response.access_token));
     yield put(setRefreshToken(response.refresh_token));
-    console.log(response);
   } catch (e) {
     console.log('Invalid credentials for register::', e);
   }

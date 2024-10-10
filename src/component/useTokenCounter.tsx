@@ -68,7 +68,6 @@ const useTokenCounter = (shouldStop: boolean) => {
   };
 
   const stopCounter = () => {
-    console.log('jhsdja');
     clearInterval(refreshId.current);
     refreshId.current = null;
   };

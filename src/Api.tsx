@@ -87,16 +87,13 @@ const apiRequest = async (
   try {
     return await api(config);
   } catch (error: any) {
-    // Check for 401 error
     if (error.response && error.response.status === 401) {
       console.log('Token expired, attempting to refresh...');
-      const data: any = await refreshAccessToken(); // Refresh token
+      const data: any = await refreshAccessToken();
       api.defaults.headers.common[
         'Authorization'
-      ] = `Bearer ${data.refresh_token}`; // Update header with new token
+      ] = `Bearer ${data.refresh_token}`;
 
-      // Retry the original request with the new token
-      console.log('data', data);
       return await api({
         ...config,
       });
@@ -145,7 +142,7 @@ export const refreshAccessToken = async () => {
   const response = await apiRequest(EHttpMethod.POST, '/refresh-token', {
     refreshToken: refreshToken.password,
   });
-  console.log('response', response.data);
+
   await setTokensInKeychain(
     response.data.access_token,
     response.data.refresh_token,
