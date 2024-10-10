@@ -1,5 +1,5 @@
 import {createAction, PayloadAction} from '@reduxjs/toolkit';
-import {call, delay, put, takeEvery} from 'redux-saga/effects';
+import {call, put, takeEvery} from 'redux-saga/effects';
 import {getBiometricType} from '../services/Biometric.service';
 import {
   setAccessToken,
@@ -12,13 +12,13 @@ import {
   BIOMETRIC_TYPE,
   KEYCHAIN_TYPE,
 } from '../constant/authentication.constant';
-import {UserModel} from '../interface/authentication.interface';
 import {
-  accessTokenMock1,
-  accessTokenMock2,
-  refreshTokenMock,
-} from '../../__mocks__/authentication.mock';
+  TokenModel,
+  UserModel,
+  UserRegisterModel,
+} from '../interface/authentication.interface';
 import * as Keychain from 'react-native-keychain';
+import api from '../Api';
 
 export function* getBiometryType() {
   try {
@@ -32,58 +32,28 @@ export function* getBiometryType() {
 export function* handleLoginUser(action: PayloadAction<{user: UserModel}>) {
   const {user} = action.payload;
   try {
-    // const { accessToken, refreshToken } = await axios.post(`${API_URL}/login`, {
-    //   username,
-    //   password,
-    // });
-    // Simulate API call delay
-    yield delay(1000);
-
-    yield call(
-      Keychain.setGenericPassword,
-      KEYCHAIN_TYPE.ACCESS_TOKEN,
-      accessTokenMock1,
-      {
-        service: KEYCHAIN_TYPE.ACCESS_TOKEN,
-      },
+    const response: TokenModel = yield call(
+      api.loginUser,
+      user.email,
+      user.password,
     );
 
-    yield call(
-      Keychain.setGenericPassword,
-      KEYCHAIN_TYPE.REFRESH_TOKEN,
-      refreshTokenMock,
-      {
-        service: KEYCHAIN_TYPE.REFRESH_TOKEN,
-      },
-    );
+    console.log('DATA::', response);
 
-    yield call(Keychain.setGenericPassword, user.userName, user.password, {
-      service: KEYCHAIN_TYPE.USER,
-    });
-    yield call(getLoginUserAction);
+    yield put(setUser({email: user.email, password: user.password}));
+    yield put(setAccessToken(response.access_token));
+    yield put(setRefreshToken(response.refresh_token));
   } catch (e) {
-    console.log('Invalid credentials::', e);
+    console.log('Invalid credentials for login::', e);
   }
 }
 
 export function* getNewAccessToken() {
   try {
-    const refreshToken: any = yield call(Keychain.getGenericPassword, {
-      service: KEYCHAIN_TYPE.REFRESH_TOKEN,
-    });
-    // Simulate API call delay
-    yield delay(1000);
-    if (refreshToken === refreshTokenMock) {
-      yield call(
-        Keychain.setGenericPassword,
-        KEYCHAIN_TYPE.ACCESS_TOKEN,
-        accessTokenMock2,
-        {
-          service: KEYCHAIN_TYPE.ACCESS_TOKEN,
-        },
-      );
-      yield call(getLoginUserAction);
-    }
+    const response: TokenModel = yield call(api.refreshAccessToken);
+    console.log('response::::', response);
+    yield put(setAccessToken(response.access_token));
+    yield put(setRefreshToken(response.refresh_token));
   } catch (e) {
     console.log('Invalid access token::', e);
   }
@@ -91,27 +61,22 @@ export function* getNewAccessToken() {
 
 export function* getLoginUser() {
   try {
-    const user: any = yield call(Keychain.getGenericPassword, {
-      service: KEYCHAIN_TYPE.USER,
-    });
-    const accessToken: any = yield call(Keychain.getGenericPassword, {
-      service: KEYCHAIN_TYPE.ACCESS_TOKEN,
-    });
-    const refreshToken: any = yield call(Keychain.getGenericPassword, {
-      service: KEYCHAIN_TYPE.REFRESH_TOKEN,
-    });
+    const {accessToken, refreshToken, user} = yield call(
+      api.getTokensFromKeychain,
+    );
+
     console.log('User::', user);
     console.log('Access Token::', accessToken);
     console.log('RefreshToken::', refreshToken);
 
     if (user) {
-      yield put(setUser({userName: user.username, password: user.password}));
+      yield put(setUser({email: user.username, password: user.password}));
     }
     if (accessToken) {
-      yield put(setAccessToken(accessToken));
+      yield put(setAccessToken(accessToken.password));
     }
     if (refreshToken) {
-      yield put(setRefreshToken(refreshToken));
+      yield put(setRefreshToken(refreshToken.password));
     }
   } catch (e) {
     console.log('Failed to get user from keychain::', e);
@@ -120,9 +85,6 @@ export function* getLoginUser() {
 
 export function* handleLogoutUser() {
   try {
-    yield call(Keychain.resetGenericPassword, {
-      service: KEYCHAIN_TYPE.USER,
-    });
     yield call(Keychain.resetGenericPassword, {
       service: KEYCHAIN_TYPE.ACCESS_TOKEN,
     });
@@ -138,12 +100,29 @@ export function* handleLogoutUser() {
   }
 }
 
+export function* registerNewUser(
+  action: PayloadAction<{user: UserRegisterModel}>,
+) {
+  const {user} = action.payload;
+  try {
+    const response: TokenModel = yield call(api.registerUser, user);
+    yield put(setUser({email: user.email, password: user.password}));
+    console.log(response);
+    yield put(setAccessToken(response.access_token));
+    yield put(setRefreshToken(response.refresh_token));
+    console.log(response);
+  } catch (e) {
+    console.log('Invalid credentials for register::', e);
+  }
+}
+
 export function* AuthenticationSaga() {
   yield takeEvery(getBiometryTypeAction.type, getBiometryType);
   yield takeEvery(handleLoginUserAction.type, handleLoginUser);
   yield takeEvery(getNewAccessTokenAction.type, getNewAccessToken);
   yield takeEvery(getLoginUserAction.type, getLoginUser);
   yield takeEvery(handleLogoutUserAction.type, handleLogoutUser);
+  yield takeEvery(registerNewUserAction.type, registerNewUser);
 }
 
 export const getBiometryTypeAction: any = createAction('getBiometryTypeAction');
@@ -157,3 +136,6 @@ export const getLoginUserAction: any = createAction('getLoginUserAction');
 export const handleLogoutUserAction: any = createAction(
   'handleLogoutUserAction',
 );
+export const registerNewUserAction: any = createAction<{
+  user: UserRegisterModel;
+}>('registerNewUserAction');

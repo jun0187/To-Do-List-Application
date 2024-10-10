@@ -25,19 +25,18 @@ import Colors from '../assets/Colors';
 import CustomButton from '../component/CustomButton';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {AUTH_NAV} from '../constant/authentication.constant';
-import {isTokenExpired} from '../services/Token.service';
+import useTokenCounter from '../component/useTokenCounter';
 
 const Home = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation<StackNavigationProp<any>>();
-
   const [refreshing, setRefreshing] = useState(false);
   const taskList = useSelector((state: any) => state.task.taskList);
   const [data, setData] = useState(taskList);
   const [sortData, setSortData] = useState(FILTER_TASK_STATUS[0]);
-  const refreshToken = useSelector((state: any) => state.auth.refreshToken);
-  const accessToken = useSelector((state: any) => state.auth.accessToken);
+  const [shouldStopCounter, setShouldStopCounter] = useState(false);
+
+  useTokenCounter(shouldStopCounter);
 
   const testId = {
     taskDetail: 'test-task-detail',
@@ -54,19 +53,7 @@ const Home = () => {
     deleteBtn: 'Delete',
     logoutBtn: 'Logout',
   };
-  useEffect(() => {
-    // Call function immediately
-    isTokenExpired(accessToken);
 
-    // Set up the interval to call the function every 5 minutes
-    const intervalId = setInterval(
-      () => isTokenExpired(accessToken) && logout(),
-      1000,
-    ); // 300,000 ms = 5 minutes
-
-    // Clear the interval on component unmount
-    return () => clearInterval(intervalId);
-  }, []);
   useEffect(() => {
     updateList();
   }, []);
@@ -104,7 +91,6 @@ const Home = () => {
 
   const logout = () => {
     dispatch(handleLogoutUserAction());
-    navigation.navigate(AUTH_NAV.LOGIN);
   };
 
   return (
@@ -141,6 +127,7 @@ const Home = () => {
         <CustomButton
           label={labelList.addBtn}
           onPressButton={() => {
+            setShouldStopCounter(true);
             dispatch(setTask(null));
             navigation.navigate(TASK_NAV.ADD_TASK);
           }}
@@ -163,6 +150,7 @@ const Home = () => {
                   key={item.id}
                   testID={`${testId.taskDetail}-${index}`}
                   onPress={() => {
+                    setShouldStopCounter(true);
                     dispatch(setTask(item));
                     navigation.navigate(TASK_NAV.EDIT_TASK);
                   }}>

@@ -6,19 +6,24 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {authenticateBiometric} from '../../services/Biometric.service';
 import {AUTH_NAV, BIOMETRIC_TYPE} from '../../constant/authentication.constant';
 import {TASK_NAV} from '../../constant/task.constant';
-import {handleLoginUserAction} from '../../saga/authentication.saga';
+import {
+  getNewAccessTokenAction,
+  handleLoginUserAction,
+  handleLogoutUserAction,
+} from '../../saga/authentication.saga';
 import {backgroundStyle} from '../Navigation';
 import Colors from '../../assets/Colors';
 import CustomButton from '../../component/CustomButton';
 import InputWithLabel from '../../component/InputWithLabel';
 import {
+  emailValidation,
+  isNullOrEmpty,
   passwordValidation,
-  usernameValidation,
 } from '../../services/Validation.service';
 import Icons from '../../assets/Icons';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {isTokenExpired} from '../../services/Token.service';
+import {isTokenExpired} from '../../component/useTokenCounter';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -29,25 +34,25 @@ const Login = () => {
   const refreshToken = useSelector((state: any) => state.auth.refreshToken);
   const accessToken = useSelector((state: any) => state.auth.accessToken);
 
-  const [userName, setUserName] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isAuth, setIsAuth] = useState(user !== null);
+  const [isAuth, setIsAuth] = useState(false);
   const [passwordSecureTextEntry, setPasswordSecureTextEntry] = useState(true);
 
   const labelList = {
     title: 'Welcome back',
-    userName: 'User Name',
+    email: 'Email',
     password: 'Password',
     loginBtn: 'Login',
     googleLogin: 'Google',
     registerDesc: "Don't have an account yet? ",
     registerBtn: 'Register',
-    invalidUsername: 'Invalid username',
+    invalidEmail: 'Invalid Email',
     invalidPassword: 'Invalid password',
   };
 
   const testID = {
-    inputUserName: 'input-userName',
+    inputEmail: 'input-email',
     inputPassword: 'input-password',
     loginBtn: 'login-button',
     googleLoginBtn: 'google-login-button',
@@ -55,27 +60,34 @@ const Login = () => {
   };
 
   useEffect(() => {
-    if (isAuth || user) {
-      navigation.navigate(TASK_NAV.HOME);
+    if (isAuth) {
+      onPressLogin();
+      setIsAuth(false);
     }
-  }, [isAuth, user]);
-
-  // useEffect(() => {
-  //   // Call function immediately
-  //   isTokenExpired(accessToken);
-
-  //   // Set up the interval to call the function every 5 minutes
-  //   const intervalId = setInterval(
-  //     () => setIsAuth(!isTokenExpired(accessToken)),
-  //     1000,
-  //   ); // 300,000 ms = 5 minutes
-
-  //   // Clear the interval on component unmount
-  //   return () => clearInterval(intervalId);
-  // }, []);
-  const onPressLogin = () => {
-    dispatch(handleLoginUserAction({user: {userName, password}}));
+    if (
+      isNullOrEmpty(user) ||
+      isNullOrEmpty(accessToken) ||
+      isNullOrEmpty(refreshToken)
+    ) {
+      return;
+    }
+    if (isTokenExpired(accessToken)) {
+      dispatch(getNewAccessTokenAction());
+    } else if (isTokenExpired(refreshToken)) {
+      dispatch(handleLogoutUserAction());
+    }
     navigation.navigate(TASK_NAV.HOME);
+  }, [isAuth, user, accessToken, refreshToken]);
+
+  const onPressLogin = () => {
+    dispatch(
+      handleLoginUserAction({
+        user: {
+          email: email || user.email,
+          password: password || user.password,
+        },
+      }),
+    );
   };
 
   const onPressAuth = async () => {
@@ -88,7 +100,7 @@ const Login = () => {
   };
 
   const isDisableNext =
-    !usernameValidation(userName) || !passwordValidation(password);
+    !emailValidation(email) || !passwordValidation(password);
 
   return (
     <SafeAreaView style={backgroundStyle()}>
@@ -99,16 +111,14 @@ const Login = () => {
         />
         <Text style={styles.titleText}>{labelList.title}</Text>
         <InputWithLabel
-          placeholder={labelList.userName}
-          label={labelList.userName}
+          placeholder={labelList.email}
+          label={labelList.email}
           inlineMessage={
-            !usernameValidation(userName)
-              ? labelList.invalidUsername
-              : undefined
+            !emailValidation(email) ? labelList.invalidEmail : undefined
           }
-          value={userName}
-          onChangeText={setUserName}
-          testId={testID.inputUserName}
+          value={email}
+          onChangeText={setEmail}
+          testId={testID.inputEmail}
         />
         <InputWithLabel
           placeholder={labelList.password}
@@ -134,7 +144,7 @@ const Login = () => {
             buttonWidth={70}
             isDisableNext={isDisableNext}
           />
-          {biometryType !== null && (
+          {!isNullOrEmpty(biometryType) && !isNullOrEmpty(user) && (
             <TouchableOpacity onPress={onPressAuth} style={{marginLeft: '7%'}}>
               <Icon name={iconName()} size={40} />
             </TouchableOpacity>

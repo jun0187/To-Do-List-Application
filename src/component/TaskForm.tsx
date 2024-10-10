@@ -1,5 +1,5 @@
 import {StyleSheet, Text, View} from 'react-native';
-import React, {Dispatch, SetStateAction} from 'react';
+import React, {Dispatch, SetStateAction, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import SegmentedControlTab from 'react-native-segmented-control-tab';
 import {useDispatch, useSelector} from 'react-redux';
@@ -12,6 +12,7 @@ import InputWithLabel from './InputWithLabel';
 import CustomButton from './CustomButton';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import useTokenCounter from './useTokenCounter';
 
 interface TaskFormProp {
   headerLabel: string;
@@ -41,7 +42,9 @@ const TaskForm = (props: TaskFormProp) => {
   const taskList = useSelector((state: any) => state.task.taskList);
   const task = useSelector((state: any) => state.task.task);
   const id: string = uuid.v4().toString();
+  const [shouldStopCounter, setShouldStopCounter] = useState(false);
 
+  useTokenCounter(shouldStopCounter);
   const labelList = {
     title: 'Title',
     description: 'Description',
@@ -59,6 +62,7 @@ const TaskForm = (props: TaskFormProp) => {
   };
 
   const submitItem = () => {
+    setShouldStopCounter(true);
     const taskItem: TaskModel = {
       ...task,
       title,
@@ -108,7 +112,10 @@ const TaskForm = (props: TaskFormProp) => {
         <View style={styles.buttonContainer}>
           <CustomButton
             label={labelList.backBtn}
-            onPressButton={navigation.goBack}
+            onPressButton={() => {
+              setShouldStopCounter(true);
+              navigation.goBack();
+            }}
             testId={testID.backBtn}
           />
           <CustomButton

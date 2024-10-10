@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet, Button} from 'react-native';
+import {View, StyleSheet, Button, Platform} from 'react-native';
 import Colors from '../assets/Colors';
 
 interface CustomButtonProps {
@@ -31,7 +31,7 @@ const CustomButton = (props: CustomButtonProps) => {
         testID={testId}
         title={label}
         onPress={onPressButton}
-        color={Colors.white}
+        color={Platform.OS === 'ios' ? Colors.white : Colors.button}
         disabled={isDisableNext}
       />
     </View>
