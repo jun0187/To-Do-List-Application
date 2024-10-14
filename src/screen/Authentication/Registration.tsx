@@ -1,7 +1,7 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React, {useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {backgroundStyle} from '../Navigation';
+import {backgroundStyle} from '../../navigation/Navigation';
 import InputWithLabel from '../../component/InputWithLabel';
 import CustomButton from '../../component/CustomButton';
 import {
@@ -9,13 +9,11 @@ import {
   isNullOrEmpty,
   passwordValidation,
 } from '../../services/Validation.service';
-import {useNavigation} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
 import {useDispatch} from 'react-redux';
 import {registerNewUserAction} from '../../saga/authentication.saga';
+import {goBack} from '../../services/Navigation.service';
 
 const Registration = () => {
-  const navigation = useNavigation<StackNavigationProp<any>>();
   const dispatch = useDispatch();
   const [firstName, setFirtName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -140,7 +138,7 @@ const Registration = () => {
         <View style={styles.buttonContainer}>
           <CustomButton
             label={labelList.backBtn}
-            onPressButton={navigation.goBack}
+            onPressButton={goBack}
             testId={testID.backBtn}
           />
           <CustomButton

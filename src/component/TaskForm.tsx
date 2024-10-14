@@ -7,12 +7,11 @@ import uuid from 'react-native-uuid';
 import {TASK_STATUS, TASK_NAV} from '../constant/task.constant';
 import {TaskModel} from '../interface/task.interface';
 import {savedTaskAction} from '../saga/task.saga';
-import {backgroundStyle} from '../screen/Navigation';
+import {backgroundStyle} from '../navigation/Navigation';
 import InputWithLabel from './InputWithLabel';
 import CustomButton from './CustomButton';
-import {useNavigation} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
 import useTokenCounter from './useTokenCounter';
+import {goBack, navigate} from '../services/Navigation.service';
 
 interface TaskFormProp {
   headerLabel: string;
@@ -37,8 +36,6 @@ const TaskForm = (props: TaskFormProp) => {
     setStatus,
   } = props;
   const dispatch = useDispatch();
-  const navigation = useNavigation<StackNavigationProp<any>>();
-
   const taskList = useSelector((state: any) => state.task.taskList);
   const task = useSelector((state: any) => state.task.task);
   const id: string = uuid.v4().toString();
@@ -75,7 +72,7 @@ const TaskForm = (props: TaskFormProp) => {
       : taskList;
     const updatedTaskList = [...filterTaskList, taskItem];
     dispatch(savedTaskAction({taskList: updatedTaskList}));
-    navigation.navigate(TASK_NAV.HOME);
+    navigate(TASK_NAV.HOME);
   };
 
   return (
@@ -114,7 +111,7 @@ const TaskForm = (props: TaskFormProp) => {
             label={labelList.backBtn}
             onPressButton={() => {
               setShouldStopCounter(true);
-              navigation.goBack();
+              goBack();
             }}
             testId={testID.backBtn}
           />

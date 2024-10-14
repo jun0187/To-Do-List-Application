@@ -9,6 +9,7 @@ import {
 } from '../reducer/authentication.reducer';
 import {Alert} from 'react-native';
 import {
+  AUTH_NAV,
   BIOMETRIC_TYPE,
   KEYCHAIN_TYPE,
 } from '../constant/authentication.constant';
@@ -19,19 +20,27 @@ import {
 } from '../interface/authentication.interface';
 import * as Keychain from 'react-native-keychain';
 import api from '../Api';
+import {setIsLoader} from '../reducer/common.reducer';
+import {navigate} from '../services/Navigation.service';
+import {TASK_NAV} from '../constant/task.constant';
 
 export function* getBiometryType() {
   try {
+    yield put(setIsLoader(true));
     const bioType: BIOMETRIC_TYPE = yield call(getBiometricType);
     yield put(setBiometricType(bioType));
   } catch (e: any) {
     Alert.alert('Could not get biometry Type: ', e.message);
+  } finally {
+    yield put(setIsLoader(false));
   }
 }
 
 export function* handleLoginUser(action: PayloadAction<{user: UserModel}>) {
   const {user} = action.payload;
   try {
+    yield put(setIsLoader(true));
+
     const response: TokenModel = yield call(
       api.loginUser,
       user.email,
@@ -41,18 +50,24 @@ export function* handleLoginUser(action: PayloadAction<{user: UserModel}>) {
     yield put(setUser({email: user.email, password: user.password}));
     yield put(setAccessToken(response.access_token));
     yield put(setRefreshToken(response.refresh_token));
-  } catch (e) {
-    console.log('Invalid credentials for login::', e);
+    navigate(TASK_NAV.HOME);
+  } catch (e: any) {
+    Alert.alert('Invalid credentials for login: ', e.message);
+  } finally {
+    yield put(setIsLoader(false));
   }
 }
 
 export function* getNewAccessToken() {
   try {
+    yield put(setIsLoader(true));
     const response: TokenModel = yield call(api.refreshAccessToken);
     yield put(setAccessToken(response.access_token));
     yield put(setRefreshToken(response.refresh_token));
-  } catch (e) {
-    console.log('Invalid access token::', e);
+  } catch (e: any) {
+    // Alert.alert('Invalid access token: ', e.message);
+  } finally {
+    yield put(setIsLoader(false));
   }
 }
 
@@ -75,13 +90,14 @@ export function* getLoginUser() {
     if (refreshToken) {
       yield put(setRefreshToken(refreshToken.password));
     }
-  } catch (e) {
-    console.log('Failed to get user from keychain::', e);
+  } catch (e: any) {
+    Alert.alert('Failed to get user from keychain: ', e.message);
   }
 }
 
 export function* handleLogoutUser() {
   try {
+    yield put(setIsLoader(true));
     yield call(Keychain.resetGenericPassword, {
       service: KEYCHAIN_TYPE.ACCESS_TOKEN,
     });
@@ -92,8 +108,11 @@ export function* handleLogoutUser() {
     yield put(setUser(null));
     yield put(setAccessToken(''));
     yield put(setRefreshToken(''));
-  } catch (e) {
-    console.log('Failed to reset keychain::', e);
+    navigate(AUTH_NAV.LOGIN);
+  } catch (e: any) {
+    Alert.alert('Failed to reset keychain: ', e.message);
+  } finally {
+    yield put(setIsLoader(false));
   }
 }
 
@@ -102,12 +121,16 @@ export function* registerNewUser(
 ) {
   const {user} = action.payload;
   try {
+    yield put(setIsLoader(true));
     const response: TokenModel = yield call(api.registerUser, user);
     yield put(setUser({email: user.email, password: user.password}));
     yield put(setAccessToken(response.access_token));
     yield put(setRefreshToken(response.refresh_token));
-  } catch (e) {
-    console.log('Invalid credentials for register::', e);
+    navigate(TASK_NAV.HOME);
+  } catch (e: any) {
+    Alert.alert('Invalid credentials for register: ', e.message);
+  } finally {
+    yield put(setIsLoader(false));
   }
 }
 

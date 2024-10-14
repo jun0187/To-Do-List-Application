@@ -19,17 +19,15 @@ import {
 import {setTask} from '../reducer/task.reducer';
 import {getTaskListAction, savedTaskAction} from '../saga/task.saga';
 import {Dropdown} from 'react-native-element-dropdown';
-import {backgroundStyle} from './Navigation';
+import {backgroundStyle} from '../navigation/Navigation';
 import {handleLogoutUserAction} from '../saga/authentication.saga';
 import Colors from '../assets/Colors';
 import CustomButton from '../component/CustomButton';
-import {useNavigation} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
 import useTokenCounter from '../component/useTokenCounter';
+import {navigate} from '../services/Navigation.service';
 
 const Home = () => {
   const dispatch = useDispatch();
-  const navigation = useNavigation<StackNavigationProp<any>>();
   const [refreshing, setRefreshing] = useState(false);
   const taskList = useSelector((state: any) => state.task.taskList);
   const [data, setData] = useState(taskList);
@@ -129,7 +127,7 @@ const Home = () => {
           onPressButton={() => {
             setShouldStopCounter(true);
             dispatch(setTask(null));
-            navigation.navigate(TASK_NAV.ADD_TASK);
+            navigate(TASK_NAV.ADD_TASK);
           }}
           testId={testId.addBtn}
           buttonWidth={90}
@@ -152,7 +150,7 @@ const Home = () => {
                   onPress={() => {
                     setShouldStopCounter(true);
                     dispatch(setTask(item));
-                    navigation.navigate(TASK_NAV.EDIT_TASK);
+                    navigate(TASK_NAV.EDIT_TASK);
                   }}>
                   <View style={styles.row}>
                     <CheckBox

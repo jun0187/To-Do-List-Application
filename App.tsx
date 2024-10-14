@@ -1,12 +1,12 @@
 import React from 'react';
+import BaseNavigation from './src/navigation/BaseNavigation';
 import {Provider} from 'react-redux';
 import {store} from './src/store';
-import Navigation from './src/screen/Navigation';
 
 const App = () => {
   return (
     <Provider store={store}>
-      <Navigation />
+      <BaseNavigation />
     </Provider>
   );
 };

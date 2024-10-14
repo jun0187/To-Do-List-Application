@@ -5,13 +5,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {authenticateBiometric} from '../../services/Biometric.service';
 import {AUTH_NAV, BIOMETRIC_TYPE} from '../../constant/authentication.constant';
-import {TASK_NAV} from '../../constant/task.constant';
-import {
-  getNewAccessTokenAction,
-  handleLoginUserAction,
-  handleLogoutUserAction,
-} from '../../saga/authentication.saga';
-import {backgroundStyle} from '../Navigation';
+import {handleLoginUserAction} from '../../saga/authentication.saga';
+import {backgroundStyle} from '../../navigation/Navigation';
 import Colors from '../../assets/Colors';
 import CustomButton from '../../component/CustomButton';
 import InputWithLabel from '../../component/InputWithLabel';
@@ -21,14 +16,10 @@ import {
   passwordValidation,
 } from '../../services/Validation.service';
 import Icons from '../../assets/Icons';
-import {useNavigation} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {isTokenExpired} from '../../component/useTokenCounter';
+import {navigate} from '../../services/Navigation.service';
 
 const Login = () => {
   const dispatch = useDispatch();
-  const navigation = useNavigation<StackNavigationProp<any>>();
-
   const biometryType = useSelector((state: any) => state.auth.biometryType);
   const user = useSelector((state: any) => state.auth.user);
   const refreshToken = useSelector((state: any) => state.auth.refreshToken);
@@ -71,12 +62,6 @@ const Login = () => {
     ) {
       return;
     }
-    if (isTokenExpired(accessToken)) {
-      dispatch(getNewAccessTokenAction());
-    } else if (isTokenExpired(refreshToken)) {
-      dispatch(handleLogoutUserAction());
-    }
-    navigation.navigate(TASK_NAV.HOME);
   }, [isAuth, user, accessToken, refreshToken]);
 
   const onPressLogin = () => {
@@ -156,7 +141,7 @@ const Login = () => {
           <TouchableOpacity
             testID={testID.registerBtn}
             onPress={() => {
-              navigation.navigate(AUTH_NAV.REGISTRATION);
+              navigate(AUTH_NAV.REGISTRATION);
             }}>
             <Text style={{color: Colors.hyperlink}}>
               {labelList.registerBtn}

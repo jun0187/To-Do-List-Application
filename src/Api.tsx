@@ -1,21 +1,21 @@
 import axios from 'axios';
 import * as Keychain from 'react-native-keychain';
-import {KEYCHAIN_TYPE} from './constant/authentication.constant';
+import {KEYCHAIN_TYPE, TOKEN} from './constant/authentication.constant';
 import {UserRegisterModel} from './interface/authentication.interface';
 import {handleLogoutUserAction} from './saga/authentication.saga';
 import {store} from './store';
+import {Alert} from 'react-native';
 
-export enum EHttpMethod {
+enum EHttpMethod {
   GET = 'GET',
   POST = 'POST',
   PUT = 'PUT',
   DELETE = 'DELETE',
 }
-export const API_BASE_URL =
-  'https://disastrous-ursola-tajjgroup-5d7bcd12.koyeb.app/api/v1/auth/';
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL:
+    'https://disastrous-ursola-tajjgroup-5d7bcd12.koyeb.app/api/v1/auth/',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -70,12 +70,24 @@ const apiRequest = async (
   method: EHttpMethod,
   endpoint: string,
   data: any = null,
+  isAccessTokenHeader?: TOKEN,
 ) => {
-  const {refreshToken} = await getTokensFromKeychain();
-  if (refreshToken) {
-    api.defaults.headers.common[
-      'Authorization'
-    ] = `Bearer ${refreshToken.password}`;
+  if (isAccessTokenHeader === TOKEN.ACCESS_TOKEN) {
+    const {accessToken} = await getTokensFromKeychain();
+    if (accessToken) {
+      api.defaults.headers.common[
+        'Authorization'
+      ] = `Bearer ${accessToken.password}`;
+    }
+  } else if (isAccessTokenHeader === TOKEN.REFRESH_TOKEN) {
+    const {refreshToken} = await getTokensFromKeychain();
+    if (refreshToken) {
+      api.defaults.headers.common[
+        'Authorization'
+      ] = `Bearer ${refreshToken.password}`;
+    }
+  } else {
+    delete api.defaults.headers.common['Authorization'];
   }
 
   const config = {
@@ -88,7 +100,7 @@ const apiRequest = async (
     return await api(config);
   } catch (error: any) {
     if (error.response && error.response.status === 401) {
-      console.log('Token expired, attempting to refresh...');
+      Alert.alert('Token expired, attempting to refresh... ');
       const data: any = await refreshAccessToken();
       api.defaults.headers.common[
         'Authorization'
@@ -139,9 +151,14 @@ export const refreshAccessToken = async () => {
   if (!refreshToken) {
     throw new Error('No refresh token available');
   }
-  const response = await apiRequest(EHttpMethod.POST, '/refresh-token', {
-    refreshToken: refreshToken.password,
-  });
+  const response = await apiRequest(
+    EHttpMethod.POST,
+    '/refresh-token',
+    {
+      refresh_token: refreshToken.password,
+    },
+    TOKEN.REFRESH_TOKEN,
+  );
 
   await setTokensInKeychain(
     response.data.access_token,

@@ -1,4 +1,3 @@
-import {StackNavigationProp} from '@react-navigation/stack';
 import {useEffect, useRef} from 'react';
 import {Alert} from 'react-native'; // Adjust if you're using a different alert system
 import {useDispatch, useSelector} from 'react-redux'; // Assuming you're using Redux for state management
@@ -7,29 +6,12 @@ import {
   getNewAccessTokenAction,
   handleLogoutUserAction,
 } from '../saga/authentication.saga';
-import {useNavigation} from '@react-navigation/native';
-import {jwtDecode} from 'jwt-decode';
-
-export const isTokenExpired = (token: string) => {
-  try {
-    const tokenExpTime = jwtDecode(token).exp;
-    if (tokenExpTime === undefined) {
-      return false; // Token doesn't have exp claim
-    }
-    const currentTime = Date.now() / 1000; // Current time in seconds
-    console.log('Current time::', currentTime);
-    console.log('tokenExpTime::', tokenExpTime, tokenExpTime < currentTime);
-    return tokenExpTime < currentTime;
-  } catch (error) {
-    console.error('Error decoding token:', error);
-    return true; // If there's an error, assume expired
-  }
-};
+import {navigate} from '../services/Navigation.service';
+import {isTokenExpired, tokenExpiredAction} from '../services/Token.service';
 
 const useTokenCounter = (shouldStop: boolean) => {
   const refreshId: any = useRef(null);
   const dispatch = useDispatch();
-  const navigation = useNavigation<StackNavigationProp<any>>();
   const refreshToken = useSelector((state: any) => state.auth.refreshToken);
   const accessToken = useSelector((state: any) => state.auth.accessToken);
 
@@ -79,21 +61,19 @@ const useTokenCounter = (shouldStop: boolean) => {
     }
 
     if (!refreshToken) {
-      navigation.navigate(AUTH_NAV.LOGIN);
+      navigate(AUTH_NAV.LOGIN);
       stopCounter();
       return;
     }
-
-    if (isTokenExpired(refreshToken)) {
-      return logout();
-    }
-    startCounter();
+    const action = tokenExpiredAction(accessToken, refreshToken);
+    dispatch(action);
+    action.type !== handleLogoutUserAction.type && startCounter();
 
     // Cleanup on unmount
     return () => {
       stopCounter();
     };
-  }, [accessToken, refreshToken, navigation, dispatch, shouldStop]);
+  }, [accessToken, refreshToken, navigate, dispatch, shouldStop]);
 
   return {
     stopCounter,

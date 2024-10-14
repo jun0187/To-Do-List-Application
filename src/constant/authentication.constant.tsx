@@ -14,3 +14,8 @@ export enum KEYCHAIN_TYPE {
   REFRESH_TOKEN = 'refreshToken',
   USER_LIST = 'user_list',
 }
+
+export enum TOKEN {
+  ACCESS_TOKEN,
+  REFRESH_TOKEN,
+}

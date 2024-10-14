@@ -10,4 +10,6 @@ export default {
   dark: '#5F6368',
   backgroundLight: '#E5D3B3',
   red: '#e00606',
+  loader: '#964B00',
+  semiTransparent: '#FFFFFF4C',
 };
