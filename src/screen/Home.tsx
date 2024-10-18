@@ -25,6 +25,7 @@ import Colors from '../assets/Colors';
 import CustomButton from '../component/CustomButton';
 import useTokenCounter from '../component/useTokenCounter';
 import {navigate} from '../services/Navigation.service';
+import {EMPLOYEE_NAV} from '../constant/employee.constant';
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -44,12 +45,14 @@ const Home = () => {
     deleteBtn: 'delete-btn',
     checkBox: 'test-check-box',
     logoutBtn: 'logout-btn',
+    employeeBtn: 'employee-btn',
   };
 
   const labelList = {
     addBtn: '+ Add',
     deleteBtn: 'Delete',
     logoutBtn: 'Logout',
+    employeeBtn: 'Employee',
   };
 
   useEffect(() => {
@@ -122,16 +125,26 @@ const Home = () => {
             buttonWidth={21}
           />
         </View>
-        <CustomButton
-          label={labelList.addBtn}
-          onPressButton={() => {
-            setShouldStopCounter(true);
-            dispatch(setTask(null));
-            navigate(TASK_NAV.ADD_TASK);
-          }}
-          testId={testId.addBtn}
-          buttonWidth={90}
-        />
+        <View style={{flexDirection: 'row'}}>
+          <CustomButton
+            label={labelList.addBtn}
+            onPressButton={() => {
+              setShouldStopCounter(true);
+              dispatch(setTask(null));
+              navigate(TASK_NAV.ADD_TASK);
+            }}
+            testId={testId.addBtn}
+            buttonWidth={60}
+          />
+          <CustomButton
+            label={labelList.employeeBtn}
+            onPressButton={() => {
+              navigate(EMPLOYEE_NAV.MAIN);
+            }}
+            testId={testId.employeeBtn}
+            buttonWidth={30}
+          />
+        </View>
         <FlatList
           testID={testId.flatList}
           refreshing={refreshing}

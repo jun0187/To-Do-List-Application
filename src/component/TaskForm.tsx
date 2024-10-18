@@ -1,17 +1,13 @@
-import {StyleSheet, Text, View} from 'react-native';
-import React, {Dispatch, SetStateAction, useState} from 'react';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {StyleSheet, Text} from 'react-native';
+import React, {Dispatch, SetStateAction} from 'react';
 import SegmentedControlTab from 'react-native-segmented-control-tab';
 import {useDispatch, useSelector} from 'react-redux';
 import uuid from 'react-native-uuid';
 import {TASK_STATUS, TASK_NAV} from '../constant/task.constant';
 import {TaskModel} from '../interface/task.interface';
 import {savedTaskAction} from '../saga/task.saga';
-import {backgroundStyle} from '../navigation/Navigation';
-import InputWithLabel from './InputWithLabel';
-import CustomButton from './CustomButton';
-import useTokenCounter from './useTokenCounter';
-import {goBack, navigate} from '../services/Navigation.service';
+import {navigate} from '../services/Navigation.service';
+import Form from './Form';
 
 interface TaskFormProp {
   headerLabel: string;
@@ -39,9 +35,7 @@ const TaskForm = (props: TaskFormProp) => {
   const taskList = useSelector((state: any) => state.task.taskList);
   const task = useSelector((state: any) => state.task.task);
   const id: string = uuid.v4().toString();
-  const [shouldStopCounter, setShouldStopCounter] = useState(false);
 
-  useTokenCounter(shouldStopCounter);
   const labelList = {
     title: 'Title',
     description: 'Description',
@@ -50,8 +44,6 @@ const TaskForm = (props: TaskFormProp) => {
   };
 
   const testID = {
-    inputTitle: 'input-title',
-    inputDesc: 'input-description',
     pendingTab: 'segmented-tab-pending',
     completedTab: 'segmented-tab-completed',
     backBtn: 'back-button',
@@ -59,7 +51,6 @@ const TaskForm = (props: TaskFormProp) => {
   };
 
   const submitItem = () => {
-    setShouldStopCounter(true);
     const taskItem: TaskModel = {
       ...task,
       title,
@@ -76,68 +67,42 @@ const TaskForm = (props: TaskFormProp) => {
   };
 
   return (
-    <SafeAreaView style={backgroundStyle()}>
-      <View style={styles.container}>
-        <Text style={styles.titleText}>{headerLabel}</Text>
-
-        <InputWithLabel
-          placeholder={labelList.title}
-          label={labelList.title}
-          value={title}
-          onChangeText={setTitle}
-          testId={testID.inputTitle}
-        />
-        <InputWithLabel
-          placeholder={labelList.description}
-          label={labelList.description}
-          value={description}
-          onChangeText={setDescription}
-          testId={testID.inputDesc}
-          isMultiline
-        />
-
-        <Text style={styles.label}>{labelList.status}</Text>
-        <SegmentedControlTab
-          testIDs={[testID.pendingTab, testID.completedTab]}
-          values={[TASK_STATUS.PENDING, TASK_STATUS.COMPLETED]}
-          tabsContainerStyle={styles.statusContainer}
-          selectedIndex={status}
-          onTabPress={index => {
-            setStatus(index);
-          }}
-        />
-        <View style={styles.buttonContainer}>
-          <CustomButton
-            label={labelList.backBtn}
-            onPressButton={() => {
-              setShouldStopCounter(true);
-              goBack();
+    <Form
+      headerLabel={headerLabel}
+      btnLabel={btnLabel}
+      item={[
+        {
+          state: title,
+          setState: setTitle,
+          label: labelList.title,
+        },
+        {
+          state: description,
+          setState: setDescription,
+          label: labelList.description,
+          isMultiline: true,
+        },
+      ]}
+      onPressSubmitItem={submitItem}
+      other={
+        <>
+          <Text style={styles.label}>{labelList.status}</Text>
+          <SegmentedControlTab
+            testIDs={[testID.pendingTab, testID.completedTab]}
+            values={[TASK_STATUS.PENDING, TASK_STATUS.COMPLETED]}
+            tabsContainerStyle={styles.statusContainer}
+            selectedIndex={status}
+            onTabPress={index => {
+              setStatus(index);
             }}
-            testId={testID.backBtn}
           />
-          <CustomButton
-            label={btnLabel}
-            onPressButton={submitItem}
-            testId={testID.submitBtn}
-            isDisableNext={!title || !description}
-          />
-        </View>
-      </View>
-    </SafeAreaView>
+        </>
+      }
+    />
   );
 };
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    marginVertical: '7%',
-  },
-  titleText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    fontFamily: 'Cochin',
-    paddingBottom: '3%',
-  },
   label: {
     fontSize: 14,
     alignSelf: 'flex-start',
@@ -147,9 +112,6 @@ const styles = StyleSheet.create({
   },
   statusContainer: {
     margin: '5%',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
   },
 });
 export default TaskForm;

@@ -22,8 +22,6 @@ const Login = () => {
   const dispatch = useDispatch();
   const biometryType = useSelector((state: any) => state.auth.biometryType);
   const user = useSelector((state: any) => state.auth.user);
-  const refreshToken = useSelector((state: any) => state.auth.refreshToken);
-  const accessToken = useSelector((state: any) => state.auth.accessToken);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -43,11 +41,10 @@ const Login = () => {
   };
 
   const testID = {
-    inputEmail: 'input-email',
-    inputPassword: 'input-password',
+    inputEmail: 'login-input-email',
+    inputPassword: 'login-input-password',
     loginBtn: 'login-button',
-    googleLoginBtn: 'google-login-button',
-    registerBtn: 'register-button',
+    registerBtn: 'login-register-button',
   };
 
   useEffect(() => {
@@ -55,14 +52,7 @@ const Login = () => {
       onPressLogin();
       setIsAuth(false);
     }
-    if (
-      isNullOrEmpty(user) ||
-      isNullOrEmpty(accessToken) ||
-      isNullOrEmpty(refreshToken)
-    ) {
-      return;
-    }
-  }, [isAuth, user, accessToken, refreshToken]);
+  }, [isAuth]);
 
   const onPressLogin = () => {
     dispatch(
@@ -96,6 +86,7 @@ const Login = () => {
         />
         <Text style={styles.titleText}>{labelList.title}</Text>
         <InputWithLabel
+          id={testID.inputEmail}
           placeholder={labelList.email}
           label={labelList.email}
           inlineMessage={
@@ -106,6 +97,7 @@ const Login = () => {
           testId={testID.inputEmail}
         />
         <InputWithLabel
+          id={testID.inputPassword}
           placeholder={labelList.password}
           label={labelList.password}
           inlineMessage={

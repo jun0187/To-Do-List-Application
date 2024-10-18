@@ -1,7 +1,8 @@
 export const TASK_NAV = {
-  HOME: 'HOME',
-  ADD_TASK: 'ADD_TASK',
-  EDIT_TASK: 'EDIT_TASK',
+  MAIN: 'Task',
+  HOME: 'Home',
+  ADD_TASK: 'AddTask',
+  EDIT_TASK: 'EditTask',
 };
 
 export const TASK_STATUS = {

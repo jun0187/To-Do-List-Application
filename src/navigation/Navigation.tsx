@@ -8,6 +8,11 @@ import {navigationRef} from '../services/Navigation.service';
 import AuthenticationNavigation from './authentication.navigation';
 import {isTokenExpired} from '../services/Token.service';
 import TaskNavigation from './task.navigation';
+import {TASK_NAV} from '../constant/task.constant';
+import {AUTH_NAV} from '../constant/authentication.constant';
+import {EMPLOYEE_NAV} from '../constant/employee.constant';
+import EmployeeListing from '../screen/Employee/EmployeeListing';
+import EmployeeNavigation from './employee.navigation';
 
 const Stack = createStackNavigator();
 export const backgroundStyle = () => {
@@ -26,15 +31,20 @@ const Navigation = () => {
       <Stack.Navigator>
         {isTokenExpired(refreshToken) && isTokenExpired(accessToken) ? (
           <Stack.Screen
-            name="Authentication"
+            name={AUTH_NAV.MAIN}
             component={AuthenticationNavigation}
             options={{headerShown: false}}
           />
         ) : (
           <>
             <Stack.Screen
-              name="Task"
+              name={TASK_NAV.MAIN}
               component={TaskNavigation}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name={EMPLOYEE_NAV.MAIN}
+              component={EmployeeNavigation}
               options={{headerShown: false}}
             />
           </>

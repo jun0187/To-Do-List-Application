@@ -52,13 +52,12 @@ const Registration = () => {
   };
 
   const testID = {
-    inputFirstName: 'input-firstName',
-    inputLastName: 'input-lastName',
-    inputEmail: 'input-email',
-    inputPassword: 'input-password',
-    inputConfirmedPassword: 'input-confirmed-password',
-    backBtn: 'back-button',
-    googleLoginBtn: 'google-login-button',
+    inputFirstName: 'register-input-firstName',
+    inputLastName: 'register-input-lastName',
+    inputEmail: 'register-input-email',
+    inputPassword: 'register-input-password',
+    inputConfirmedPassword: 'register-input-confirmed-password',
+    backBtn: 'register-back-button',
     registerBtn: 'register-button',
   };
 
@@ -73,6 +72,7 @@ const Registration = () => {
       <View style={styles.container}>
         <Text style={styles.titleText}>{labelList.title}</Text>
         <InputWithLabel
+          id={testID.inputFirstName}
           placeholder={labelList.firstName}
           label={labelList.firstName}
           value={firstName}
@@ -80,6 +80,7 @@ const Registration = () => {
           testId={testID.inputFirstName}
         />
         <InputWithLabel
+          id={testID.inputLastName}
           placeholder={labelList.lastName}
           label={labelList.lastName}
           value={lastName}
@@ -87,6 +88,7 @@ const Registration = () => {
           testId={testID.inputLastName}
         />
         <InputWithLabel
+          id={testID.inputEmail}
           placeholder={labelList.email}
           label={labelList.email}
           inlineMessage={
@@ -98,6 +100,7 @@ const Registration = () => {
         />
 
         <InputWithLabel
+          id={testID.inputPassword}
           placeholder={labelList.password}
           label={labelList.password}
           inlineMessage={
@@ -117,6 +120,7 @@ const Registration = () => {
           }
         />
         <InputWithLabel
+          id={testID.inputConfirmedPassword}
           placeholder={labelList.confirmedPassword}
           label={labelList.confirmedPassword}
           inlineMessage={

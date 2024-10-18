@@ -1,4 +1,5 @@
 export const AUTH_NAV = {
+  MAIN: 'Authentication',
   LOGIN: 'Login',
   REGISTRATION: 'Registration',
 };
@@ -12,7 +13,6 @@ export enum KEYCHAIN_TYPE {
   USER = 'user',
   ACCESS_TOKEN = 'accessToken',
   REFRESH_TOKEN = 'refreshToken',
-  USER_LIST = 'user_list',
 }
 
 export enum TOKEN {

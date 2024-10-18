@@ -19,10 +19,15 @@ import {
   UserRegisterModel,
 } from '../interface/authentication.interface';
 import * as Keychain from 'react-native-keychain';
-import api from '../Api';
 import {setIsLoader} from '../reducer/common.reducer';
 import {navigate} from '../services/Navigation.service';
 import {TASK_NAV} from '../constant/task.constant';
+import {
+  getTokensFromKeychain,
+  loginUser,
+  refreshAccessToken,
+  registerUser,
+} from '../services/Token.service';
 
 export function* getBiometryType() {
   try {
@@ -42,7 +47,7 @@ export function* handleLoginUser(action: PayloadAction<{user: UserModel}>) {
     yield put(setIsLoader(true));
 
     const response: TokenModel = yield call(
-      api.loginUser,
+      loginUser,
       user.email,
       user.password,
     );
@@ -61,7 +66,7 @@ export function* handleLoginUser(action: PayloadAction<{user: UserModel}>) {
 export function* getNewAccessToken() {
   try {
     yield put(setIsLoader(true));
-    const response: TokenModel = yield call(api.refreshAccessToken);
+    const response: TokenModel = yield call(refreshAccessToken);
     yield put(setAccessToken(response.access_token));
     yield put(setRefreshToken(response.refresh_token));
   } catch (e: any) {
@@ -73,9 +78,7 @@ export function* getNewAccessToken() {
 
 export function* getLoginUser() {
   try {
-    const {accessToken, refreshToken, user} = yield call(
-      api.getTokensFromKeychain,
-    );
+    const {accessToken, refreshToken, user} = yield call(getTokensFromKeychain);
 
     console.log('User::', user);
     console.log('Access Token::', accessToken);
@@ -122,7 +125,7 @@ export function* registerNewUser(
   const {user} = action.payload;
   try {
     yield put(setIsLoader(true));
-    const response: TokenModel = yield call(api.registerUser, user);
+    const response: TokenModel = yield call(registerUser, user);
     yield put(setUser({email: user.email, password: user.password}));
     yield put(setAccessToken(response.access_token));
     yield put(setRefreshToken(response.refresh_token));

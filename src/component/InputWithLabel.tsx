@@ -5,11 +5,13 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  KeyboardTypeOptions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icons from '../assets/Icons';
 
 interface InputWithLabelProps {
+  id: string;
   label: string;
   placeholder: string;
   inlineMessage?: string;
@@ -19,9 +21,11 @@ interface InputWithLabelProps {
   isMultiline?: boolean;
   secureTextEntry?: boolean;
   onPressEyeIcon?: () => void;
+  keyboardType?: KeyboardTypeOptions;
 }
 const InputWithLabel = (props: InputWithLabelProps) => {
   const {
+    id,
     label,
     placeholder,
     inlineMessage,
@@ -31,10 +35,11 @@ const InputWithLabel = (props: InputWithLabelProps) => {
     isMultiline = false,
     secureTextEntry = false,
     onPressEyeIcon,
+    keyboardType = 'default',
   } = props;
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} id={id}>
       <Text style={styles.label}>{label}</Text>
       <View style={styles.inputRow}>
         <TextInput
@@ -46,6 +51,7 @@ const InputWithLabel = (props: InputWithLabelProps) => {
           multiline={isMultiline}
           secureTextEntry={secureTextEntry}
           autoCapitalize={'none'}
+          keyboardType={keyboardType}
         />
         {value && onPressEyeIcon && (
           <TouchableOpacity
