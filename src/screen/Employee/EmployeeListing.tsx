@@ -15,7 +15,7 @@ import CustomButton from '../../component/CustomButton';
 import useTokenCounter from '../../component/useTokenCounter';
 import {backgroundStyle} from '../../navigation/Navigation';
 import {EMPLOYEE_NAV} from '../../constant/employee.constant';
-import {navigate} from '../../services/Navigation.service';
+import {goBack, navigate} from '../../services/Navigation.service';
 import {setEmployee} from '../../reducer/employee.reducer';
 import {
   deleteEmployeeAction,
@@ -45,6 +45,7 @@ const EmployeeListing = () => {
     deleteBtn: 'delete-btn',
     checkBox: 'test-check-box',
     refreshBtn: 'test-refresh-btn',
+    backBtn: 'test-back-btn',
   };
 
   const labelList = {
@@ -52,6 +53,7 @@ const EmployeeListing = () => {
     addBtn: '+ Add',
     deleteBtn: 'Delete',
     refreshBtn: 'Refresh',
+    backBtn: 'Back',
   };
 
   useFocusEffect(
@@ -99,16 +101,27 @@ const EmployeeListing = () => {
     <SafeAreaView style={backgroundStyle()}>
       <View style={styles.container}>
         <Text style={{fontSize: 25}}>{labelList.title}</Text>
-        <CustomButton
-          label={labelList.addBtn}
-          onPressButton={() => {
-            setShouldStopCounter(true);
-            dispatch(setEmployee(null));
-            navigate(EMPLOYEE_NAV.EMPLOYEE_DETAIL);
-          }}
-          testId={testId.addBtn}
-          buttonWidth={90}
-        />
+
+        <View style={{flexDirection: 'row'}}>
+          <CustomButton
+            label={labelList.backBtn}
+            onPressButton={goBack}
+            testId={testId.backBtn}
+            buttonWidth={15}
+          />
+
+          <CustomButton
+            label={labelList.addBtn}
+            onPressButton={() => {
+              setShouldStopCounter(true);
+              dispatch(setEmployee(null));
+              navigate(EMPLOYEE_NAV.EMPLOYEE_DETAIL);
+            }}
+            testId={testId.addBtn}
+            buttonWidth={70}
+          />
+        </View>
+
         <View style={styles.flatListContainer}>
           <FlatList
             testID={testId.flatList}
@@ -180,10 +193,10 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: '8%',
+    paddingVertical: '10%',
   },
   flatListContainer: {
-    paddingTop: '2%',
+    marginBottom: '5%',
   },
   emptyContainer: {
     width: Dimensions.get('window').width - 32,

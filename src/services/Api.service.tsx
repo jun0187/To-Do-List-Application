@@ -49,11 +49,9 @@ api.interceptors.response.use(
       console.log('error.response::', error.response.status);
       if (error.response.status === 403) {
         // access token expired
-        console.log('refresh new token');
         alertAccessTokenExpired();
       } else if (error.response.status === 401) {
         // refresh token expired
-        console.log('logout');
         store.dispatch(handleLogoutUserAction());
       } else {
         Alert.alert('Error communicating with server', error.message);

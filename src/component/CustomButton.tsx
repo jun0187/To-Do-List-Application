@@ -55,8 +55,8 @@ const CustomButton = (props: CustomButtonProps) => {
 const styles = StyleSheet.create({
   buttonInnerContainer: {
     borderRadius: 10,
-    marginHorizontal: 5,
-    marginVertical: 3,
+    marginHorizontal: '3%',
+    marginVertical: '2%',
   },
 });
 

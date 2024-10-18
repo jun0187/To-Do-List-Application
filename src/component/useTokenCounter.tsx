@@ -8,6 +8,7 @@ import {
   isTokenExpired,
   tokenExpiredAction,
 } from '../services/Token.service';
+import {isNullOrEmpty} from '../services/Validation.service';
 
 const useTokenCounter = (shouldStop: boolean) => {
   const refreshId: any = useRef(null);
@@ -47,9 +48,11 @@ const useTokenCounter = (shouldStop: boolean) => {
       return;
     }
     const action = tokenExpiredAction(accessToken, refreshToken);
-    dispatch(action);
-    action.type !== handleLogoutUserAction.type && startCounter();
-
+    if (!isNullOrEmpty(action.type)) {
+      dispatch(action);
+    } else {
+      action.type !== handleLogoutUserAction.type && startCounter();
+    }
     // Cleanup on unmount
     return () => {
       stopCounter();
