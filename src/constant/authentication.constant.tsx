@@ -2,6 +2,7 @@ export const AUTH_NAV = {
   MAIN: 'Authentication',
   LOGIN: 'Login',
   REGISTRATION: 'Registration',
+  DRAWER: 'DrawerNavigation',
 };
 
 export enum BIOMETRIC_TYPE {

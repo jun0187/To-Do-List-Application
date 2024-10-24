@@ -4,14 +4,12 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  TouchableOpacity,
   KeyboardTypeOptions,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icons from '../assets/Icons';
+import IconButton from './IconButton';
 
 interface InputWithLabelProps {
-  id: string;
   label: string;
   placeholder: string;
   inlineMessage?: string;
@@ -25,7 +23,6 @@ interface InputWithLabelProps {
 }
 const InputWithLabel = (props: InputWithLabelProps) => {
   const {
-    id,
     label,
     placeholder,
     inlineMessage,
@@ -39,7 +36,7 @@ const InputWithLabel = (props: InputWithLabelProps) => {
   } = props;
 
   return (
-    <View style={styles.container} id={id}>
+    <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
       <View style={styles.inputRow}>
         <TextInput
@@ -54,14 +51,13 @@ const InputWithLabel = (props: InputWithLabelProps) => {
           keyboardType={keyboardType}
         />
         {value && onPressEyeIcon && (
-          <TouchableOpacity
+          <IconButton
+            iconName={secureTextEntry ? Icons.EYE_OFF : Icons.EYE}
             onPress={onPressEyeIcon}
-            style={styles.iconContainer}>
-            <Icon
-              name={secureTextEntry ? Icons.EYE_OFF : Icons.EYE}
-              size={25}
-            />
-          </TouchableOpacity>
+            iconSize={25}
+            style={styles.iconContainer}
+            testId={'biometric-icon'}
+          />
         )}
       </View>
       {value && inlineMessage ? (

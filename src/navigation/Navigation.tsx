@@ -1,27 +1,15 @@
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
-import {useColorScheme} from 'react-native';
 import {useSelector} from 'react-redux';
-import Colors from '../assets/Colors';
 import {navigationRef} from '../services/Navigation.service';
 import AuthenticationNavigation from './authentication.navigation';
 import {isTokenExpired} from '../services/Token.service';
-import TaskNavigation from './task.navigation';
-import {TASK_NAV} from '../constant/task.constant';
 import {AUTH_NAV} from '../constant/authentication.constant';
-import {EMPLOYEE_NAV} from '../constant/employee.constant';
-import EmployeeListing from '../screen/Employee/EmployeeListing';
-import EmployeeNavigation from './employee.navigation';
+import DrawerNavigation from './DrawerNavigation';
 
 const Stack = createStackNavigator();
-export const backgroundStyle = () => {
-  return {
-    backgroundColor:
-      useColorScheme() === 'dark' ? Colors.dark : Colors.backgroundLight,
-    flex: 1,
-  };
-};
+
 const Navigation = () => {
   const refreshToken = useSelector((state: any) => state.auth.refreshToken);
   const accessToken = useSelector((state: any) => state.auth.accessToken);
@@ -36,18 +24,11 @@ const Navigation = () => {
             options={{headerShown: false}}
           />
         ) : (
-          <>
-            <Stack.Screen
-              name={TASK_NAV.MAIN}
-              component={TaskNavigation}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name={EMPLOYEE_NAV.MAIN}
-              component={EmployeeNavigation}
-              options={{headerShown: false}}
-            />
-          </>
+          <Stack.Screen
+            name={AUTH_NAV.DRAWER}
+            component={DrawerNavigation}
+            options={{headerShown: false}}
+          />
         )}
       </Stack.Navigator>
     </NavigationContainer>

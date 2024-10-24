@@ -1,12 +1,11 @@
-import {KeyboardTypeOptions, StyleSheet, Text, View} from 'react-native';
+import {KeyboardTypeOptions, StyleSheet, View} from 'react-native';
 import React, {Dispatch, SetStateAction, useState} from 'react';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {backgroundStyle} from '../navigation/Navigation';
 import InputWithLabel from './InputWithLabel';
 import CustomButton from './CustomButton';
 import useTokenCounter from './useTokenCounter';
 import {goBack} from '../services/Navigation.service';
 import {isNullOrEmpty} from '../services/Validation.service';
+import StackContainer from './StackContainer';
 
 interface FormProp {
   headerLabel: string;
@@ -22,6 +21,7 @@ interface FormProp {
   other?: React.JSX.Element;
   onPressSubmitItem: () => void;
   extraDisableCondition?: boolean;
+  bottomNote?: React.JSX.Element;
 }
 
 const Form = (props: FormProp) => {
@@ -32,6 +32,7 @@ const Form = (props: FormProp) => {
     other,
     onPressSubmitItem,
     extraDisableCondition,
+    bottomNote,
   } = props;
   const [shouldStopCounter, setShouldStopCounter] = useState(false);
 
@@ -52,15 +53,13 @@ const Form = (props: FormProp) => {
   };
 
   return (
-    <SafeAreaView style={backgroundStyle()}>
-      <View style={styles.container}>
-        <Text style={styles.titleText}>{headerLabel}</Text>
-        {item.map((i: any) => {
-          const testIDInput = testID.input.replace('{item}', i.label);
+    <StackContainer title={headerLabel}>
+      {item.map((i: any, key) => {
+        const testIDInput = testID.input.replace('{item}', i.label);
 
-          return (
+        return (
+          <View key={key}>
             <InputWithLabel
-              id={`${headerLabel}-${testIDInput}`}
               placeholder={i.label}
               label={i.label}
               value={i.state}
@@ -70,38 +69,40 @@ const Form = (props: FormProp) => {
               keyboardType={i.keyboardType}
               inlineMessage={i.inlineMessage}
             />
-          );
-        })}
+          </View>
+        );
+      })}
 
-        {other}
+      {other}
 
-        <View style={styles.buttonContainer}>
-          <CustomButton
-            label={labelList.backBtn}
-            onPressButton={() => {
-              setShouldStopCounter(true);
-              goBack();
-            }}
-            testId={testID.backBtn}
-          />
-          <CustomButton
-            label={btnLabel}
-            onPressButton={submitItem}
-            testId={testID.submitBtn}
-            isDisableNext={
-              item.some(i => isNullOrEmpty(i.state)) || extraDisableCondition
-            }
-          />
-        </View>
+      <View style={styles.buttonContainer}>
+        <CustomButton
+          label={labelList.backBtn}
+          onPressButton={() => {
+            setShouldStopCounter(true);
+            goBack();
+          }}
+          testId={testID.backBtn}
+        />
+        <CustomButton
+          label={btnLabel}
+          onPressButton={submitItem}
+          testId={testID.submitBtn}
+          isDisableNext={
+            item.some(i => isNullOrEmpty(i.state)) || extraDisableCondition
+          }
+        />
       </View>
-    </SafeAreaView>
+      {bottomNote}
+    </StackContainer>
   );
 };
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     alignItems: 'center',
-    marginVertical: '7%',
+    // marginVertical: '7%',
+    justifyContent: 'center',
   },
   titleText: {
     fontSize: 24,

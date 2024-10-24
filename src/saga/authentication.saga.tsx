@@ -9,7 +9,6 @@ import {
 } from '../reducer/authentication.reducer';
 import {Alert} from 'react-native';
 import {
-  AUTH_NAV,
   BIOMETRIC_TYPE,
   KEYCHAIN_TYPE,
 } from '../constant/authentication.constant';
@@ -20,8 +19,6 @@ import {
 } from '../interface/authentication.interface';
 import * as Keychain from 'react-native-keychain';
 import {setIsLoader} from '../reducer/common.reducer';
-import {navigate} from '../services/Navigation.service';
-import {TASK_NAV} from '../constant/task.constant';
 import {
   getTokensFromKeychain,
   loginUser,
@@ -55,7 +52,6 @@ export function* handleLoginUser(action: PayloadAction<{user: UserModel}>) {
     yield put(setUser({email: user.email, password: user.password}));
     yield put(setAccessToken(response.access_token));
     yield put(setRefreshToken(response.refresh_token));
-    navigate(TASK_NAV.HOME);
   } catch (e: any) {
     Alert.alert('Invalid credentials for login: ', e.message);
   } finally {
@@ -111,7 +107,6 @@ export function* handleLogoutUser() {
     yield put(setUser(null));
     yield put(setAccessToken(''));
     yield put(setRefreshToken(''));
-    navigate(AUTH_NAV.LOGIN);
   } catch (e: any) {
     Alert.alert('Failed to reset keychain: ', e.message);
   } finally {
@@ -129,7 +124,6 @@ export function* registerNewUser(
     yield put(setUser({email: user.email, password: user.password}));
     yield put(setAccessToken(response.access_token));
     yield put(setRefreshToken(response.refresh_token));
-    navigate(TASK_NAV.HOME);
   } catch (e: any) {
     Alert.alert('Invalid credentials for register: ', e.message);
   } finally {

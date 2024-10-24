@@ -1,7 +1,7 @@
 import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
 import {TASK_NAV} from '../constant/task.constant';
-import Home from '../screen/Home';
+import TaskListing from '../screen/Task/TaskListing';
 import AddTask from '../screen/Task/AddTask';
 import EditTask from '../screen/Task/EditTask';
 
@@ -9,10 +9,10 @@ const Stack = createStackNavigator();
 
 const TaskNavigation = () => {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName={TASK_NAV.TASK_LISTING}>
       <Stack.Screen
-        name={TASK_NAV.HOME}
-        component={Home}
+        name={TASK_NAV.TASK_LISTING}
+        component={TaskListing}
         options={{headerShown: false}}
       />
       <Stack.Screen

@@ -1,6 +1,6 @@
 export const TASK_NAV = {
   MAIN: 'Task',
-  HOME: 'Home',
+  TASK_LISTING: 'TaskListing',
   ADD_TASK: 'AddTask',
   EDIT_TASK: 'EditTask',
 };

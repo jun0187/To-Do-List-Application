@@ -1,12 +1,9 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {authenticateBiometric} from '../../services/Biometric.service';
 import {AUTH_NAV, BIOMETRIC_TYPE} from '../../constant/authentication.constant';
 import {handleLoginUserAction} from '../../saga/authentication.saga';
-import {backgroundStyle} from '../../navigation/Navigation';
 import Colors from '../../assets/Colors';
 import CustomButton from '../../component/CustomButton';
 import InputWithLabel from '../../component/InputWithLabel';
@@ -17,6 +14,8 @@ import {
 } from '../../services/Validation.service';
 import Icons from '../../assets/Icons';
 import {navigate} from '../../services/Navigation.service';
+import StackContainer from '../../component/StackContainer';
+import IconButton from '../../component/IconButton';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -45,6 +44,7 @@ const Login = () => {
     inputPassword: 'login-input-password',
     loginBtn: 'login-button',
     registerBtn: 'login-register-button',
+    biometricIcon: 'login-biometric-icon-button',
   };
 
   useEffect(() => {
@@ -69,86 +69,79 @@ const Login = () => {
     setIsAuth(await authenticateBiometric());
   };
 
-  const iconName = () => {
-    if (biometryType === BIOMETRIC_TYPE.FACE_ID) return Icons.FACE_RECOGNITION;
-    else return Icons.FINGERPRINT;
-  };
+  const iconName =
+    biometryType === BIOMETRIC_TYPE.FACE_ID
+      ? Icons.FACE_RECOGNITION
+      : Icons.FINGERPRINT;
 
   const isDisableNext =
     !emailValidation(email) || !passwordValidation(password);
 
   return (
-    <SafeAreaView style={backgroundStyle()}>
-      <View style={styles.container}>
-        <Image
-          style={styles.logo}
-          source={require('../../assets/images/pets_formal.png')}
+    <StackContainer style={styles.container}>
+      <Image
+        style={styles.logo}
+        source={require('../../assets/images/pets_formal.png')}
+      />
+      <Text style={styles.titleText}>{labelList.title}</Text>
+      <InputWithLabel
+        placeholder={labelList.email}
+        label={labelList.email}
+        inlineMessage={
+          !emailValidation(email) ? labelList.invalidEmail : undefined
+        }
+        value={email}
+        onChangeText={setEmail}
+        testId={testID.inputEmail}
+      />
+      <InputWithLabel
+        placeholder={labelList.password}
+        label={labelList.password}
+        inlineMessage={
+          !passwordValidation(password) ? labelList.invalidPassword : undefined
+        }
+        value={password}
+        onChangeText={setPassword}
+        testId={testID.inputPassword}
+        secureTextEntry={passwordSecureTextEntry}
+        onPressEyeIcon={() =>
+          setPasswordSecureTextEntry(!passwordSecureTextEntry)
+        }
+      />
+      <View style={styles.buttonContainer}>
+        <CustomButton
+          label={labelList.loginBtn}
+          onPressButton={onPressLogin}
+          testId={testID.loginBtn}
+          buttonWidth={70}
+          isDisableNext={isDisableNext}
         />
-        <Text style={styles.titleText}>{labelList.title}</Text>
-        <InputWithLabel
-          id={testID.inputEmail}
-          placeholder={labelList.email}
-          label={labelList.email}
-          inlineMessage={
-            !emailValidation(email) ? labelList.invalidEmail : undefined
-          }
-          value={email}
-          onChangeText={setEmail}
-          testId={testID.inputEmail}
-        />
-        <InputWithLabel
-          id={testID.inputPassword}
-          placeholder={labelList.password}
-          label={labelList.password}
-          inlineMessage={
-            !passwordValidation(password)
-              ? labelList.invalidPassword
-              : undefined
-          }
-          value={password}
-          onChangeText={setPassword}
-          testId={testID.inputPassword}
-          secureTextEntry={passwordSecureTextEntry}
-          onPressEyeIcon={() =>
-            setPasswordSecureTextEntry(!passwordSecureTextEntry)
-          }
-        />
-        <View style={styles.buttonContainer}>
-          <CustomButton
-            label={labelList.loginBtn}
-            onPressButton={onPressLogin}
-            testId={testID.loginBtn}
-            buttonWidth={70}
-            isDisableNext={isDisableNext}
+        {!isNullOrEmpty(biometryType) && !isNullOrEmpty(user) && (
+          <IconButton
+            iconName={iconName}
+            onPress={onPressAuth}
+            style={{marginLeft: '7%'}}
+            testId={testID.biometricIcon}
           />
-          {!isNullOrEmpty(biometryType) && !isNullOrEmpty(user) && (
-            <TouchableOpacity onPress={onPressAuth} style={{marginLeft: '7%'}}>
-              <Icon name={iconName()} size={40} />
-            </TouchableOpacity>
-          )}
-        </View>
-
-        <View style={styles.buttonContainer}>
-          <Text>{labelList.registerDesc}</Text>
-          <TouchableOpacity
-            testID={testID.registerBtn}
-            onPress={() => {
-              navigate(AUTH_NAV.REGISTRATION);
-            }}>
-            <Text style={{color: Colors.hyperlink}}>
-              {labelList.registerBtn}
-            </Text>
-          </TouchableOpacity>
-        </View>
+        )}
       </View>
-    </SafeAreaView>
+
+      <View style={styles.buttonContainer}>
+        <Text>{labelList.registerDesc}</Text>
+        <TouchableOpacity
+          testID={testID.registerBtn}
+          onPress={() => {
+            navigate(AUTH_NAV.REGISTRATION);
+          }}>
+          <Text style={{color: Colors.hyperlink}}>{labelList.registerBtn}</Text>
+        </TouchableOpacity>
+      </View>
+    </StackContainer>
   );
 };
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
     paddingBottom: '20%',
   },
   logo: {

@@ -63,7 +63,7 @@ const TaskForm = (props: TaskFormProp) => {
       : taskList;
     const updatedTaskList = [...filterTaskList, taskItem];
     dispatch(savedTaskAction({taskList: updatedTaskList}));
-    navigate(TASK_NAV.HOME);
+    navigate(TASK_NAV.TASK_LISTING);
   };
 
   return (

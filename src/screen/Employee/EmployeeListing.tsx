@@ -3,7 +3,6 @@ import {
   ActivityIndicator,
   Dimensions,
   FlatList,
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -13,9 +12,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import React from 'react';
 import CustomButton from '../../component/CustomButton';
 import useTokenCounter from '../../component/useTokenCounter';
-import {backgroundStyle} from '../../navigation/Navigation';
 import {EMPLOYEE_NAV} from '../../constant/employee.constant';
-import {goBack, navigate} from '../../services/Navigation.service';
+import {navigate} from '../../services/Navigation.service';
 import {setEmployee} from '../../reducer/employee.reducer';
 import {
   deleteEmployeeAction,
@@ -24,6 +22,9 @@ import {
 import Colors from '../../assets/Colors';
 import {EmployeeModel} from '../../interface/employee.interface';
 import {useFocusEffect} from '@react-navigation/native';
+import StackContainer from '../../component/StackContainer';
+import IconButton from '../../component/IconButton';
+import Icons from '../../assets/Icons';
 
 const EmployeeListing = () => {
   const dispatch = useDispatch();
@@ -40,20 +41,15 @@ const EmployeeListing = () => {
   const testId = {
     employeeDetail: 'test-employee-detail',
     flatList: 'test-flat-list',
-    dropDown: 'test-drop-down',
     addBtn: 'add-btn',
     deleteBtn: 'delete-btn',
-    checkBox: 'test-check-box',
     refreshBtn: 'test-refresh-btn',
-    backBtn: 'test-back-btn',
   };
 
   const labelList = {
     title: 'Employee',
     addBtn: '+ Add',
-    deleteBtn: 'Delete',
     refreshBtn: 'Refresh',
-    backBtn: 'Back',
   };
 
   useFocusEffect(
@@ -98,101 +94,89 @@ const EmployeeListing = () => {
   };
 
   return (
-    <SafeAreaView style={backgroundStyle()}>
-      <View style={styles.container}>
-        <Text style={{fontSize: 25}}>{labelList.title}</Text>
+    <StackContainer
+      isToggleButton
+      title={labelList.title}
+      style={styles.container}>
+      <CustomButton
+        label={labelList.addBtn}
+        onPressButton={() => {
+          setShouldStopCounter(true);
+          dispatch(setEmployee(null));
+          navigate(EMPLOYEE_NAV.EMPLOYEE_DETAIL);
+        }}
+        testId={testId.addBtn}
+        buttonWidth={90}
+      />
 
-        <View style={{flexDirection: 'row'}}>
-          <CustomButton
-            label={labelList.backBtn}
-            onPressButton={goBack}
-            testId={testId.backBtn}
-            buttonWidth={15}
-          />
-
-          <CustomButton
-            label={labelList.addBtn}
-            onPressButton={() => {
-              setShouldStopCounter(true);
-              dispatch(setEmployee(null));
-              navigate(EMPLOYEE_NAV.EMPLOYEE_DETAIL);
-            }}
-            testId={testId.addBtn}
-            buttonWidth={70}
-          />
-        </View>
-
-        <View style={styles.flatListContainer}>
-          <FlatList
-            testID={testId.flatList}
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            data={data}
-            keyExtractor={(item, index) => `${item.id}-${index}`}
-            onEndReached={onEndReached}
-            onEndReachedThreshold={0.01}
-            ListFooterComponent={
-              employeeList?.isLoading &&
-              !refreshing && (
-                <ActivityIndicator animating={true} color={Colors.loader} />
-              )
-            }
-            ListEmptyComponent={
-              employeeList?.isError && (
-                <View style={styles.emptyContainer}>
-                  <CustomButton
-                    label={labelList.refreshBtn}
-                    onPressButton={onRefresh}
-                    testId={testId.refreshBtn}
-                    buttonWidth={100}
-                  />
-                </View>
-              )
-            }
-            renderItem={({item, index}) => {
-              return (
-                <View style={styles.listingContainer} key={index}>
-                  <TouchableOpacity
-                    key={item.id}
-                    testID={`${testId.employeeDetail}-${index}`}
-                    onPress={() => {
-                      setShouldStopCounter(true);
-                      dispatch(setEmployee(item));
-                      navigate(EMPLOYEE_NAV.EMPLOYEE_DETAIL);
-                    }}>
-                    <View style={styles.row}>
-                      <View style={styles.column}>
-                        <Text style={{fontWeight: 'bold'}}>
-                          {`${item.firstName}, ${
-                            item.lastName
-                          } (MYR ${item.salary.toFixed(2)})`}
-                        </Text>
-                        <Text>{item.email}</Text>
-                        <Text>{item.department}</Text>
-                      </View>
-                      <CustomButton
-                        label={labelList.deleteBtn}
-                        onPressButton={() => {
-                          deleteItem(item);
-                        }}
-                        testId={`${testId.deleteBtn}-${index}`}
-                        buttonWidth={30}
-                      />
+      <View style={styles.flatListContainer}>
+        <FlatList
+          testID={testId.flatList}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          data={data}
+          keyExtractor={(item, index) => `${item.id}-${index}`}
+          onEndReached={onEndReached}
+          onEndReachedThreshold={0.01}
+          ListFooterComponent={
+            employeeList?.isLoading &&
+            !refreshing && (
+              <ActivityIndicator animating={true} color={Colors.loader} />
+            )
+          }
+          ListEmptyComponent={
+            employeeList?.isError && (
+              <View style={styles.emptyContainer}>
+                <CustomButton
+                  label={labelList.refreshBtn}
+                  onPressButton={onRefresh}
+                  testId={testId.refreshBtn}
+                  buttonWidth={100}
+                />
+              </View>
+            )
+          }
+          renderItem={({item, index}) => {
+            return (
+              <View style={styles.listingContainer} key={index}>
+                <TouchableOpacity
+                  key={item.id}
+                  testID={`${testId.employeeDetail}-${index}`}
+                  onPress={() => {
+                    setShouldStopCounter(true);
+                    dispatch(setEmployee(item));
+                    navigate(EMPLOYEE_NAV.EMPLOYEE_DETAIL);
+                  }}>
+                  <View style={styles.row}>
+                    <View style={styles.column}>
+                      <Text style={{fontWeight: 'bold'}}>
+                        {`${item.firstName}, ${
+                          item.lastName
+                        } (MYR ${item.salary.toFixed(2)})`}
+                      </Text>
+                      <Text>{item.email}</Text>
+                      <Text>{item.department}</Text>
                     </View>
-                  </TouchableOpacity>
-                </View>
-              );
-            }}
-          />
-        </View>
+                    <IconButton
+                      iconName={Icons.DELETE}
+                      onPress={() => {
+                        deleteItem(item);
+                      }}
+                      iconSize={28}
+                      testId={`${testId.deleteBtn}-${index}`}
+                    />
+                  </View>
+                </TouchableOpacity>
+              </View>
+            );
+          }}
+        />
       </View>
-    </SafeAreaView>
+    </StackContainer>
   );
 };
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'center',
-    alignItems: 'center',
     paddingVertical: '10%',
   },
   flatListContainer: {
@@ -219,7 +203,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     flexDirection: 'column',
     alignItems: 'flex-start',
-    width: '65%',
+    width: '80%',
   },
 });
 export default EmployeeListing;

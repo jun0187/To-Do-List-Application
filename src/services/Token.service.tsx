@@ -4,7 +4,7 @@ import {
   getNewAccessTokenAction,
   handleLogoutUserAction,
 } from '../saga/authentication.saga';
-import {KEYCHAIN_TYPE, TOKEN} from '../constant/authentication.constant';
+import {KEYCHAIN_TYPE} from '../constant/authentication.constant';
 import * as Keychain from 'react-native-keychain';
 import {apiRequest, EHttpMethod} from './Api.service';
 import {UserRegisterModel} from '../interface/authentication.interface';

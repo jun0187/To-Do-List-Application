@@ -37,13 +37,7 @@ const useTokenCounter = (shouldStop: boolean) => {
   };
 
   useEffect(() => {
-    if (shouldStop) {
-      stopCounter();
-      return;
-    }
-
-    if (!refreshToken) {
-      navigate(AUTH_NAV.LOGIN);
+    if (shouldStop || !refreshToken) {
       stopCounter();
       return;
     }

@@ -8,5 +8,6 @@ module.exports = {
   ],
   "collectCoverage": true,
   "coverageReporters": ["html", "text"],
-  "coverageDirectory": "coverage"
+  "coverageDirectory": "coverage",
+  "verbose": true
 };

@@ -1,11 +1,9 @@
 import {UserModel} from '../src/interface/authentication.interface';
 
-export const taskListMock: Array<UserModel> = [
-  {
-    email: 'testuser',
-    password: 'password123',
-  },
-];
+export const userMock: UserModel = {
+  email: 'Test123@example.com',
+  password: 'Test@123',
+};
 
 //based on taskListMock[0]
 export const jwtMock =
